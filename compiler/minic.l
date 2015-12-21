@@ -30,6 +30,7 @@ void
 minic_set_source_string(char **source)
 {
     st_source_string = source;
+    //source_code = malloc(CODE_SIZE);
     st_current_source_line = 0;
     st_current_char_index = 0;
 }
@@ -71,8 +72,6 @@ my_yyinput(char *buf, int max_size)
 	break;
     default:
 	break;
-//	DBG_panic("bad default, input_mode..%d\n",
-//		  minic_get_current_compiler()->input_mode);
     }
 
     return result;
@@ -93,280 +92,284 @@ increment_line_number(void)
 static void
 output(char *buf)
 {
-    FILE *fp;
-    fp = fopen("lex","ab");
-    fwrite(buf,strlen(buf),1,fp);
+    strcat(source_code,buf);
+    //printf("%s\n",source_code);
     return;
 }
 
 %}
 
-%start C_COMMENT CC_COMMENT STRING_LITERAL_STATE SHIFT_JIS_2ND_CHAR
+%start C_COMMENT CC_COMMENT FILE_NAME STRING_LITERAL_STATE SHIFT_JIS_2ND_CHAR
 %%
 <INITIAL>"if"	{
-	char buf[] = "if IF\n";
+	char buf[] = "if IF\t";
 	output(buf);
 	return IF;
 }
 <INITIAL>"else" {
-	char buf[] = "else ELSE\n";
+	char buf[] = "else ELSE\t";
 	output(buf);
 	return ELSE;
 }
 <INITIAL>"elseif" {
-	char buf[] = "elseif ELSEIF\n";
+	char buf[] = "elseif ELSEIF\t";
 	output(buf);
 	return ELSEIF;
 }
 <INITIAL>"while" {
-	char buf[] = "while WHILE\n";
+	char buf[] = "while WHILE\t";
 	output(buf);
 	return WHILE;
 }
 <INITIAL>"for"	{
-	char buf[] = "for FOR\n";
+	char buf[] = "for FOR\t";
 	output(buf);
 	return FOR;
 }
 <INITIAL>"do"	{
-	char buf[] = "do DO\n";
+	char buf[] = "do DO\t";
 	output(buf);
 	return DO_T;
 }
 <INITIAL>"foreach" {
-	char buf[] = "foreach FOREACH\n";
+	char buf[] = "foreach FOREACH\t";
 	output(buf);
 	return FOREACH;
 }
 <INITIAL>"return" {
-	char buf[] = "return RETURN_T\n";
+	char buf[] = "return RETURN_T\t";
 	output(buf);
 	return RETURN_T;
 }
 <INITIAL>"break" {
-	char buf[] = "break BREAK\n";
+	char buf[] = "break BREAK\t";
 	output(buf);
 	return BREAK;
 }
 <INITIAL>"continue" {
-	char buf[] = "continue CONTINUE\n";
+	char buf[] = "continue CONTINUE\t";
 	output(buf);
 	return CONTINUE;
 }
 <INITIAL>"true" {
-	char buf[] = "true TURE_T\n";
+	char buf[] = "true TURE_T\t";
 	output(buf);
 	return TRUE_T;
 }
 <INITIAL>"false" {
-	char buf[] = "false FALSE_T\n";
+	char buf[] = "false FALSE_T\t";
 	output(buf);
 	return FALSE_T;
 }
 <INITIAL>"boolean" {
-	char buf[] = "boolean BOOLEAN_T\n";
+	char buf[] = "boolean BOOLEAN_T\t";
 	output(buf);
 	return BOOLEAN_T;
 }
 <INITIAL>"integer" {
-	char buf[] = "integer INT_T\n";
+	char buf[] = "integer INT_T\t";
 	output(buf);
 	return INT_T;
 }
 <INITIAL>"decimal" {
-	char buf[] = "decimal DECIMAL_T\n";
+	char buf[] = "decimal DECIMAL_T\t";
 	output(buf);
 	return DECIMAL_T;
 }
 <INITIAL>"string" {
-	char buf[] = "string STRING_T\n";
+	char buf[] = "string STRING_T\t";
 	output(buf);
 	return STRING_T;
 }
 <INITIAL>"new"	{
-	char buf[] = "new NEW\n";
+	char buf[] = "new NEW\t";
 	output(buf);
 	return NEW;
 }
 <INITIAL>"null" {
-	char buf[] = "null NULL_T\n";
+	char buf[] = "null NULL_T\t";
 	output(buf);
 	return NULL_T;
 }
 <INITIAL>"void" {
-	char buf[] = "void VOID_T\n";
+	char buf[] = "void VOID_T\t";
 	output(buf);
 	return VOID_T;
 }
-<INITIAL>"struct" {
-	char buf[] = "struct CLASS_T\n";
+<INITIAL>"structure" {
+	char buf[] = "structure CLASS_T\t";
 	output(buf);
 	return CLASS_T;
 }
+<INITIAL>"reference" {
+	char buf[] = "reference REFERENCE\t";
+	output(buf);
+	BEGIN FILE_NAME;
+}
 <INITIAL>"("  {
-	char buf[] = "( LP\n";
+	char buf[] = "( LP\t";
 	output(buf);
 	return LP;
 }
 <INITIAL>")"	{
-	char buf[] = ") RP\n";
+	char buf[] = ") RP\t";
 	output(buf);
 	return RP;
 }
 <INITIAL>"{"	{
-	char buf[] = "{ LC\n";
+	char buf[] = "{ LC\t";
 	output(buf);
 	return LC;
 }
 <INITIAL>"}"	{
-	char buf[] = "} RC\n";
+	char buf[] = "} RC\t";
 	output(buf);
 	return RC;
 }
 <INITIAL>"["	{
-	char buf[] = "[ LB\n";
+	char buf[] = "[ LB\t";
 	output(buf);
 	return LB;
-}
+} 
 <INITIAL>"]"	{
-	char buf[] = "] RB\n";
+	char buf[] = "] RB\t";
 	output(buf);
 	return RB;
 }
 <INITIAL>";"	{
-	char buf[] = "; SEMICOLON\n";
+	char buf[] = "; SEMICOLON\t";
 	output(buf);
 	return SEMICOLON;
 }
 <INITIAL>":"	{
-	char buf[] = ": COLON\n";
+	char buf[] = ": COLON\t";
 	output(buf);
 	return COLON;
 }
 <INITIAL>","	{
-	char buf[] = ", COMMA\n";
+	char buf[] = ", COMMA\t";
 	output(buf);
 	return COMMA;
 }
 <INITIAL>"&&"	{
-	char buf[] = "&& LOGICAL_AND\n";
+	char buf[] = "&& LOGICAL_AND\t";
 	output(buf);
 	return LOGICAL_AND;
 }
 <INITIAL>"||"	{
-	char buf[] = "|| LOGICAL_OR\n";
+	char buf[] = "|| LOGICAL_OR\t";
 	output(buf);
 	return LOGICAL_OR;
 }
 <INITIAL>":="	{
-	char buf[] = ":= ASSIGN_T\n";
+	char buf[] = ":= ASSIGN_T\t";
 	output(buf);
 	return ASSIGN_T;
 }
 <INITIAL>"="	{
-	char buf[] = "= EQ\n";
+	char buf[] = "= EQ\t";
 	output(buf);
 	return EQ;
 }
 <INITIAL>"!="	{
-	char buf[] = "!= NE\n";
+	char buf[] = "!= NE\t";
 	output(buf);
 	return NE;
 }
 <INITIAL>">"	{
-	char buf[] = "> GT\n";
+	char buf[] = "> GT\t";
 	output(buf);
 	return GT;
 }
 <INITIAL>">="	{
-	char buf[] = ">= GE\n";
+	char buf[] = ">= GE\t";
 	output(buf);
 	return GE;
 }
 <INITIAL>"<"	{
-	char buf[] = "< LT\n";
+	char buf[] = "< LT\t";
 	output(buf);
 	return LT;
 }
 <INITIAL>"<="	{
-	char buf[] = "<= LE\n";
+	char buf[] = "<= LE\t";
 	output(buf);
 	return LE;
 }
 <INITIAL>"+"	{
-	char buf[] = "+ ADD\n";
+	char buf[] = "+ ADD\t";
 	output(buf);
 	return ADD;
 }
 <INITIAL>"-"	{
-	char buf[] = "- SUB\n";
+	char buf[] = "- SUB\t";
 	output(buf);
 	return SUB;
 }
 <INITIAL>"*"	{
-	char buf[] = "* MUL\n";
+	char buf[] = "* MUL\t";
 	output(buf);
 	return MUL;
 }
 <INITIAL>"/"	{
-	char buf[] = "/ DIV\n";
+	char buf[] = "/ DIV\t";
 	output(buf);
 	return DIV;
 }
 <INITIAL>"%"	{
-	char buf[] = "% MODE\n";
+	char buf[] = "% MODE\t";
 	output(buf);
 	return MOD;
 }
 <INITIAL>"+="	{
-	char buf[] = "+= ADD_ASSIGN_T\n";
+	char buf[] = "+= ADD_ASSIGN_T\t";
 	output(buf);
 	return ADD_ASSIGN_T;
 }
 <INITIAL>"-="	{
-	char buf[] = "-= SUB_ASSIGN_T\n";
+	char buf[] = "-= SUB_ASSIGN_T\t";
 	output(buf);
 	return SUB_ASSIGN_T;
 }
 <INITIAL>"*="	{
-	char buf[] = "*= MUL_ASSIGN_T\n";
+	char buf[] = "*= MUL_ASSIGN_T\t";
 	output(buf);
 	return MUL_ASSIGN_T;
 }
 <INITIAL>"/="	{
-	char buf[] = "/= DIV_ASSIGN_T\n";
+	char buf[] = "/= DIV_ASSIGN_T\t";
 	output(buf);
 	return DIV_ASSIGN_T;
 }
 <INITIAL>"%="	{
-	char buf[] = "%= MOD_ASSIGN_T\n";
+	char buf[] = "%= MOD_ASSIGN_T\t";
 	output(buf);
 	return MOD_ASSIGN_T;
 }
 <INITIAL>"++"	{
-	char buf[] = "++ INCREMENT\n";
+	char buf[] = "++ INCREMENT\t";
 	output(buf);
 	return INCREMENT;
 }
 <INITIAL>"--"	{
-	char buf[] = "-- DECREMENT\n";
+	char buf[] = "-- DECREMENT\t";
 	output(buf);
 	return DECREMENT;
 }
 <INITIAL>"!"	{
-	char buf[] = "! EXCLAMATION\n";
+	char buf[] = "! EXCLAMATION\t";
 	output(buf);
 	return EXCLAMATION;
 }
 <INITIAL>"."	{
-	char buf[] = ". DOT\n";
+	char buf[] = ". DOT\t";
 	output(buf);
 	return DOT;
 }
 <INITIAL>[A-Za-z_][A-Za-z_0-9]* {
 	yylval.identifier = minic_create_identifier(yytext);
 	char buf[64];
-	sprintf(buf,"%s %s\n",yylval.identifier,"IDENTIFIER");
+	sprintf(buf,"%s %s\t",yylval.identifier,"IDENTIFIER");
 	output(buf);
 	return IDENTIFIER;
 }
@@ -375,7 +378,7 @@ output(char *buf)
 	sscanf(yytext, "%d", &expression->u.integer_value);
 	yylval.expression = expression;
 	char buf[64];
-	sprintf(buf,"%s INT_LITERAL\n", yytext);
+	sprintf(buf,"%s INT_LITERAL\t", yytext);
 	output(buf);
 	return INT_LITERAL;
 }
@@ -384,7 +387,7 @@ output(char *buf)
 	sscanf(yytext, "%x", &expression->u.integer_value);
 	yylval.expression = expression;
 	char buf[64];
-	sprintf(buf,"%s INT_LITERAL\n", yytext);
+	sprintf(buf,"%s INT_LITERAL\t", yytext);
 	output(buf);
 	return INT_LITERAL;
 }
@@ -392,7 +395,7 @@ output(char *buf)
 	Expression *expression = minic_alloc_expression(INTEGER_EXPRESSION);
 	expression->u.integer_value = 0;
 	yylval.expression = expression;
-	char buf[] = "0 INT LITERAL\n";
+	char buf[] = "0 INT LITERAL\t";
 	output(buf);
 	return INT_LITERAL;
 }
@@ -401,67 +404,67 @@ output(char *buf)
 	sscanf(yytext, "%f", &expression->u.decimal_value);
 	yylval.expression = expression;
 	char buf[64];
-	sprintf(buf, "%s DECIMAL_LITERAL\n", yytext);
+	sprintf(buf, "%s DECIMAL_LITERAL\t", yytext);
 	output(buf);
 	return DECIMAL_LITERAL;
 }
 <INITIAL>\" {
-	char buf[] = "\"  STRING_LITERAL_STATE\n";
+	char buf[] = "\"  STRING_LITERAL_STATE\t";
 	output(buf);
 	minic_open_string_literal();
 	BEGIN STRING_LITERAL_STATE;
 }
 <INITIAL>[ ]  {
-	char buf[] = "  EMPTY\n";
-	output(buf);
 }
 <INITIAL>\n {
-	char buf[] = "\\n \n";
+	char buf[] = "\\n NEW_LINE\t";
 	output(buf);
 	increment_line_number();
 }
 <INITIAL>"/*"	{
-	char buf[] = "/* C_COMMENT\n";
+	char buf[] = "/* C_COMMENT\t";
 	output(buf);
 	BEGIN C_COMMENT;
 }
 <INITIAL>"//"	{
-	char buf[] = "// CC_COMMENT\n";
+	char buf[] = "// CC_COMMENT\t";
 	output(buf);
 	BEGIN CC_COMMENT;
 }
 <INITIAL>.	{
 	char buf[LINE_BUF_SIZE];
-
+	char str[LINE_BUF_SIZE];
 	if(isprint(yytext[0])) {
 		buf[0] = yytext[0];
-		buf[1] = '\0';
-		output(buf);
+		buf[1] = '\t';
 	} else {
 		sprintf(buf,"0x%02x", (unsigned char)yytext[0]);
-		output(buf);
 	}
+	sprintf(str,"%s\t",buf);
+	output(str);
 	//minic_compile_error(minic_get_current_compiler()->current_line_number,
 	//		    CHARACTER_INVALID_ERR,STRING_MESSAGE_ARGUMENT,
 	//		    "bad char",buf,MESSAGE_ARGUMENT_END);
-	printf("FROM LEX\nLine[%d]: %s-%c\n",minic_get_current_compiler()->current_line_number,"bad char",yytext[0]);
-	exit(-1);;
+	printf("FROM LEX\nLine[%d]: %s - %c\n",minic_get_current_compiler()->current_line_number,"bad char",yytext[0]);
+	exit(-1);
 }
 <C_COMMENT>\n	{
-	char buf[] = "\\n END_COMMENT\n";
+	char buf[] = "\\n END_COMMENT\t";
 	output(buf);
 	increment_line_number();
 }
 <C_COMMENT>"*/" {
-	char buf[] = "*/ END_COMMENT\n";
+	char buf[] = "*/ END_COMMENT\t";
 	output(buf);
 	BEGIN INITIAL;
 }
 <C_COMMENT>.	{
-	output(yytext);
+	char buf[LINE_BUF_SIZE];
+	sprintf(buf,"%s\t",yytext);
+	output(buf);
 }
 <CC_COMMENT>\n	{
-	char buf[] ="\\n NEW_LINE\n";
+	char buf[] ="\\n NEW_LINE\t";
 	output(buf);
 	increment_line_number();
 	BEGIN INITIAL;
@@ -469,6 +472,22 @@ output(char *buf)
 <CC_COMMENT>.	{
 	output(yytext);
 }
+
+<FILE_NAME>[ ]  {
+}
+
+<FILE_NAME>[A-Za-z_][A-Za-z_0-9]*+\.[A-Za-z]*  {
+	char buf[LINE_BUF_SIZE];
+	sprintf(buf,"%s\t",yytext);
+	output(buf);
+}
+
+<FILE_NAME>";" {
+	char buf[] = "; SEMICOLON\t";
+	output(buf);
+	BEGIN INITIAL;
+}
+
 <STRING_LITERAL_STATE>\"	{
 	Expression *expression = minic_alloc_expression(STRING_EXPRESSION);
 	expression->u.string_value = minic_close_string_literal();
@@ -500,4 +519,3 @@ output(char *buf)
     BEGIN STRING_LITERAL_STATE;
 }
 %%
-

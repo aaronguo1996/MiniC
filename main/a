@@ -27,17 +27,17 @@ if(b>=10){
   integer d := 12;
 }
 integer i;
-for(i=0;i<9;i++)
+/*for(i=0;i<9;i++)
 {
  b--;
-}
+}*/
 while(b<0){
 b++;
 }
-foreach( a : i)
+/*foreach( a : i)
 {
 f(i);
 //i;
-}
+}*/
 return b;
 }

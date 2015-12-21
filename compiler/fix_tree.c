@@ -3,13 +3,15 @@
 #include "minic.h"
 #include "node.h"
 
+/*
 static ClassDefinition *
 search_class_and_add(int line_number, char *name, int *class_index_p);
+*/
 
 static int
 add_class(ClassDefinition *src)
 {
-    int i;
+    //int i;
     //DVM_Class *dest;
     //char *src_package_name;
     MINIC_Compiler *compiler = minic_get_current_compiler();
@@ -23,8 +25,8 @@ add_class(ClassDefinition *src)
 		    "class redefined error.");
 	}
     }
-    ret = compiler->class_count;
-    compiler->class_count++;
+    ret = compiler->mvm_class_count;
+    compiler->mvm_class_count++;
     /*for(sup_pos=src->extends;sup_pos;sup_pos=sup_pos->next){
 	int dummy;
 	search_class_and_add(src->line_number, sup_pos->identifier, &dummy);
@@ -50,27 +52,28 @@ fix_type_specifier(TypeSpecifier *type)
 {
     ClassDefinition *cd;
     TypeDerive *derive_pos;
-    MINIC_Compiler *compiler = minic_get_current_compiler();
+    //MINIC_Compiler *compiler = minic_get_current_compiler();
 
-    for(derive_pos = type->derive; derive_pos;derive_pos = derive_pos->next){
-	if(derive_pos->tag == FUNCTION_DERIVE){
-	    fix_parameter_list(derive_pos->u.function_d.parameter_list);
-	}
+    for(derive_pos = type->derive; derive_pos;derive_pos = derive_pos->next)
+	{
+	    if (derive_pos->tag == FUNCTION_DERIVE) {
+	        fix_parameter_list(derive_pos->u.function_d.parameter_list);
+	    }
     }
 
-    if(type->basic_type== MINIC_CLASS_TYPE && type->class_ref.class_definition == NULL){
-	cd - minic_search_class(type->class_ref.identifier);
-	if(cd){
-	    type->class_ref.class_definition = cd;
-	    type->class_ref.class_index = add_class(cd);
-	    return;
-	}
-	printf("FROM FIX_TYPE_SPECIFIER\nLine[%d]: %s %s\n",
-		type->line_number,
-		"cannot find type name",type->class_ref.identifier);
+    if (type->basic_type == MVM_CLASS_TYPE && type->class_ref.class_definition == NULL) {
+	    cd = minic_search_class(type->class_ref.identifier);
+	    if (cd) {
+	        type->class_ref.class_definition = cd;
+	        type->class_ref.class_index = add_class(cd);
+	        return;
+	    }
+	    printf("FROM FIX_TYPE_SPECIFIER\nLine[%d]: %s %s\n",
+		    type->line_number,
+		    "cannot find type name",type->class_ref.identifier);
     }
 }
-
+/*
 static TypeSpecifier *
 create_function_derive_type(FunctionDefinition *fd)
 {
@@ -83,7 +86,7 @@ create_function_derive_type(FunctionDefinition *fd)
 
     return ret;
 }
-
+*/
 
 static Expression *
 fix_identifier_expression(Block *current_block, Expression *expr,
@@ -188,7 +191,7 @@ eval_math_expression_int(Expression *expr, int left, int right)
 	exit(-1);
     }
     expr->kind = INTEGER_EXPRESSION;
-    expr->type = minic_alloc_type_specifier(MINIC_INTEGER_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_INTEGER_TYPE);
 
     return expr;
 }
@@ -216,7 +219,7 @@ eval_math_expression_decimal(Expression *expr, float left, float right)
 	exit(-1);
     }
     expr->kind = DECIMAL_EXPRESSION;
-    expr->type = minic_alloc_type_specifier(MINIC_DECIMAL_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_DECIMAL_TYPE);
 
     return expr;
 }
@@ -239,7 +242,7 @@ chain_string(Expression *expr)
     free(left_str);
     free(right_str);
     expr->kind = STRING_EXPRESSION;
-    expr->type = minic_alloc_type_specifier(MINIC_STRING_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_STRING_TYPE);
     expr->u.string_value = new_str;
 
     return expr;
@@ -248,6 +251,7 @@ chain_string(Expression *expr)
 static Expression *
 eval_math_expression(Block *current_block, Expression *expr)
 {
+    printf("left:%d\nright:%d\n",expr->u.binary_expression.left->kind,expr->u.binary_expression.right->kind);
     if(expr->u.binary_expression.left->kind == INTEGER_EXPRESSION
 	&& expr->u.binary_expression.right->kind == INTEGER_EXPRESSION){
 	expr = eval_math_expression_int(expr,
@@ -265,12 +269,6 @@ eval_math_expression(Block *current_block, Expression *expr)
     }else if(expr->u.binary_expression.left->kind == STRING_EXPRESSION
 	     && expr->kind == ADD_EXPRESSION){
 	expr = chain_string(expr);
-    }else if(expr->u.binary_expression.left->kind !=
-	     expr->u.binary_expression.right->kind){
-	printf("FROM EVAL_MATH_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"wrong basic type between left and right expressions.");
-	exit(-1);
     }
 
     return expr;
@@ -292,20 +290,20 @@ fix_math_binary_expression(Block *current_block, Expression *expr)
 
     if(minic_is_integer(expr->u.binary_expression.left->type)
 	&& minic_is_integer(expr->u.binary_expression.right->type)){
-	expr->type = minic_alloc_type_specifier(MINIC_INTEGER_TYPE);
+	expr->type = minic_alloc_type_specifier(MVM_INTEGER_TYPE);
     }else if(minic_is_decimal(expr->u.binary_expression.left->type)
 	     && minic_is_decimal(expr->u.binary_expression.right->type)){
-	expr->type = minic_alloc_type_specifier(MINIC_DECIMAL_TYPE);
+	expr->type = minic_alloc_type_specifier(MVM_DECIMAL_TYPE);
     }else if(minic_is_string(expr->u.binary_expression.left->type)
 	     && minic_is_string(expr->u.binary_expression.right->type)){
-	expr->type = minic_alloc_type_specifier(MINIC_STRING_TYPE);
+	expr->type = minic_alloc_type_specifier(MVM_STRING_TYPE);
     } else if (expr->kind == ADD_EXPRESSION
                && ((minic_is_string(expr->u.binary_expression.left->type)
                     && minic_is_string(expr->u.binary_expression.right->type))
                    || (minic_is_string(expr->u.binary_expression.left->type)
                        && expr->u.binary_expression.right->kind
                        == NULL_EXPRESSION))) {
-        expr->type =  minic_alloc_type_specifier(MINIC_STRING_TYPE);
+        expr->type =  minic_alloc_type_specifier(MVM_STRING_TYPE);
     } else{
 	printf("FROM FIX_MATH_BINARY_EXPRESSION\nLine[%d]: %s\n",
 		expr->line_number,
@@ -318,7 +316,7 @@ fix_math_binary_expression(Block *current_block, Expression *expr)
 
 static Expression *
 eval_compare_expression_boolean(Expression *expr, 
-				MINIC_Boolean left, MINIC_Boolean right)
+				MVM_Boolean left, MVM_Boolean right)
 {
     if(expr->kind == EQ_EXPRESSION){
 	expr->u.boolean_value = (left == right);
@@ -332,7 +330,7 @@ eval_compare_expression_boolean(Expression *expr,
     }
 
     expr->kind = BOOLEAN_EXPRESSION;
-    expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
 
     return expr;
 }
@@ -359,7 +357,7 @@ eval_compare_expression_int(Expression *expr, int left, int right)
 	exit(-1);
     }
 
-    expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
     expr->kind = BOOLEAN_EXPRESSION;
 
     return expr;
@@ -387,7 +385,7 @@ eval_compare_expression_decimal(Expression *expr, float left, float right)
 	exit(-1);
     }
 
-    expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
     expr->kind = BOOLEAN_EXPRESSION;
 
     return expr;
@@ -418,7 +416,7 @@ eval_compare_expression_string(Expression *expr, char *left, char *right)
 	exit(-1);
     }
 
-    expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
     expr->kind = BOOLEAN_EXPRESSION;
 
     return expr;
@@ -476,8 +474,8 @@ eval_compare_expression(Expression *expr)
     } else if (expr->u.binary_expression.left->kind == NULL_EXPRESSION
                && expr->u.binary_expression.right->kind == NULL_EXPRESSION) {
         expr->kind = BOOLEAN_EXPRESSION;
-        expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
-        expr->u.boolean_value = MINIC_TRUE;
+        expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
+        expr->u.boolean_value = MVM_TRUE;
     }
 
     return expr;
@@ -502,7 +500,7 @@ fix_compare_expression(Block *current_block, Expression *expr)
 		"wrong compare expression.");
 	exit(-1);
     }
-    expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+    expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
 
     return expr;
 }
@@ -517,7 +515,7 @@ fix_logical_and_or_expression(Block *current_block, Expression *expr)
 
     if(minic_is_boolean(expr->u.binary_expression.left->type)
 	&& minic_is_boolean(expr->u.binary_expression.right->type)){
-	expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+	expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
     }else{
 	printf("FROM FIX_LOGICAL_AND_OR_EXPRESSION\nLine[%d]: %s\n",
 		expr->line_number,
@@ -606,7 +604,7 @@ check_argument(Block *current_block, FunctionDefinition *fd, Expression *expr)
 	exit(-1);
     }
 }
-
+/*
 static ClassDefinition *
 search_class_and_add(int line_number, char *name, int *class_index_p)
 {
@@ -622,10 +620,11 @@ search_class_and_add(int line_number, char *name, int *class_index_p)
 
     return cd;
 }
-
+*/
 static Expression *
 fix_function_call_expression(Block *current_block, Expression *expr)
 {
+    printf("this is function\n");
     Expression *func_expr;
     FunctionDefinition *fd;
 
@@ -804,16 +803,16 @@ fix_expression(Block *current_block, Expression *expr,
 
     switch (expr->kind) {
     case BOOLEAN_EXPRESSION:
-        expr->type = minic_alloc_type_specifier(MINIC_BOOLEAN_TYPE);
+        expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
         break;
     case INTEGER_EXPRESSION:
-        expr->type = minic_alloc_type_specifier(MINIC_INTEGER_TYPE);
+        expr->type = minic_alloc_type_specifier(MVM_INTEGER_TYPE);
         break;
     case DECIMAL_EXPRESSION:
-        expr->type = minic_alloc_type_specifier(MINIC_DECIMAL_TYPE);
+        expr->type = minic_alloc_type_specifier(MVM_DECIMAL_TYPE);
         break;
     case STRING_EXPRESSION:
-        expr->type = minic_alloc_type_specifier(MINIC_STRING_TYPE);
+        expr->type = minic_alloc_type_specifier(MVM_STRING_TYPE);
         break;
     case IDENTIFIER_EXPRESSION:
         expr = fix_identifier_expression(current_block, expr, parent);
@@ -859,7 +858,7 @@ fix_expression(Block *current_block, Expression *expr,
 	    expr = fix_member_expression(current_block, expr);
 	    break;
     case NULL_EXPRESSION:
-	expr->type = minic_alloc_type_specifier(MINIC_NULL_TYPE);
+	expr->type = minic_alloc_type_specifier(MVM_NULL_TYPE);
 	break;
     case INDEX_EXPRESSION:
 	expr = fix_index_expression(current_block,expr);
@@ -924,50 +923,46 @@ fix_return_statement(Block *current_block, ReturnStatement *return_s,
                      FunctionDefinition *fd)
 {
     Expression *return_value;
-//    Expression *casted_expression;
-
     return_value
         = fix_expression(current_block, return_s->return_value, NULL);
-
     if (return_value == NULL) {
-
         if (fd->type->derive) {
             if (fd->type->derive->tag == ARRAY_DERIVE) {
                 return_value = minic_alloc_expression(NULL_EXPRESSION);
             }
         } else {
             switch (fd->type->basic_type) {
-            case MINIC_BOOLEAN_TYPE:
+            case MVM_BOOLEAN_TYPE:
                 return_value = minic_alloc_expression(BOOLEAN_EXPRESSION);
-                return_value->u.boolean_value = MINIC_FALSE;
+                return_value->u.boolean_value = MVM_FALSE;
                 break;
-            case MINIC_INTEGER_TYPE:
+            case MVM_INTEGER_TYPE:
                 return_value = minic_alloc_expression(INTEGER_EXPRESSION);
                 return_value->u.integer_value = 0;
                 break;
-            case MINIC_DECIMAL_TYPE:
+            case MVM_DECIMAL_TYPE:
                 return_value = minic_alloc_expression(DECIMAL_EXPRESSION);
                 return_value->u.decimal_value = 0.0;
                 break;
-            case MINIC_STRING_TYPE:
+            case MVM_STRING_TYPE:
                 return_value = minic_alloc_expression(STRING_EXPRESSION);
                 return_value->u.string_value = "";
                 break;
-            case MINIC_NULL_TYPE: /* FALLTHRU */
+            case MVM_NULL_TYPE: /* FALLTHRU */
+                return_value = minic_alloc_expression(NULL_EXPRESSION);
+                printf("oops4\n");
             default:
-                //DBG_assert(0, ("basic_type..%d\n"));
                 break;
             }
         }
         return_s->return_value = return_value;
-
-        //return;
+        return;
     }
     if(return_s->return_value->type->basic_type != fd->type->basic_type){
-	printf("FROM FIX_RETURN_STATEMENT\nLine[%d]: %s\n",
-		return_s->return_value->line_number,
-		"wrong return value type.");
-	exit(-1);
+    	printf("FROM FIX_RETURN_STATEMENT\nLine[%d]: %s\n",
+    		return_s->return_value->line_number,
+    		"wrong return value type.");
+    	exit(-1);
     }
 }
 
@@ -976,43 +971,44 @@ add_declaration(Block *current_block, Declaration *decl,
                 FunctionDefinition *fd, int line_number)
 {
     if (minic_search_declaration(decl->name, current_block) || minic_search_class(decl->name)) {
-	printf("FROM ADD_DECLARATION\nLine[%d]: %s %s\n",
-		line_number,
-		"variable multiple define error:",
-		decl->name);        
-	exit(-1);
+    	printf("FROM ADD_DECLARATION\nLine[%d]: %s %s\n",
+    		line_number,
+    		"variable multiple define error:",
+    		decl->name);        
+    	exit(-1);
     }
 
     if (current_block) {
         current_block->declaration_list
             = minic_chain_declaration(current_block->declaration_list, decl);
         add_local_variable(fd, decl);
-        decl->is_local = MINIC_TRUE;
+        decl->is_local = MVM_TRUE;
     } else {
         MINIC_Compiler *compiler = minic_get_current_compiler();
         compiler->declaration_list
             = minic_chain_declaration(compiler->declaration_list, decl);
-        decl->is_local = MINIC_FALSE;
+        decl->is_local = MVM_FALSE;
     }
 }
 
 static Expression *
 create_assign_cast(Expression *src, TypeSpecifier *dst)
 {
-    Expression *case_expr;
-
-    if(src->type->basic_type == dst->basic_type) return src;
+    if (src->type->basic_type == dst->basic_type) 
+		return src;
     else{
-	printf("FROM CREATE_ASSIGN_CAST\nLine[%d]: %s\n",
+	    printf("FROM CREATE_ASSIGN_CAST\nLine[%d]: %s\n",
 		src->line_number,
 		"wrong expression type.");
     }
+	return NULL;
 }
 
 static void
 fix_statement(Block *current_block, Statement *statement,
               FunctionDefinition *fd)
 {
+    printf("%d\n",statement->type);
     switch (statement->type) {
     case EXPRESSION_STATEMENT:
         fix_expression(current_block, statement->u.expression_s, NULL);
@@ -1020,14 +1016,14 @@ fix_statement(Block *current_block, Statement *statement,
     case IF_STATEMENT:
         fix_if_statement(current_block, &statement->u.if_s, fd);
         break;
-    case WHILE_STATEMENT://statement->while_statement
+    case WHILE_STATEMENT: //statement->while_statement
 	fix_expression(current_block, statement->u.while_s.condition, 
 		       NULL);
         fix_statement_list(statement->u.while_s.block,
                            statement->u.while_s.block->statement_list, 
 			   fd);
 	break;
-    case FOR_STATEMENT://statement->for_statement
+    case FOR_STATEMENT: //statement->for_statement
 	fix_expression(current_block, statement->u.for_s.init,
 		       	NULL);
         fix_expression(current_block, statement->u.for_s.condition, 
@@ -1053,6 +1049,7 @@ fix_statement(Block *current_block, Statement *statement,
 			   fd);
         break;
     case RETURN_STATEMENT:
+    printf("Oops\n");
         fix_return_statement(current_block,
                              &statement->u.return_s, fd);
         break;
@@ -1073,7 +1070,6 @@ fix_statement(Block *current_block, Statement *statement,
         break;
     case STATEMENT_TYPE_COUNT_PLUS_1: /* FALLTHRU */
     default:
-        //DBG_assert(0, ("bad case. type..%d\n", statement->type));
     	break;
     }
 }
@@ -1137,30 +1133,24 @@ add_return_function(FunctionDefinition *fd)
 void
 minic_fix_tree(MINIC_Compiler *compiler)
 {
-//    TreeNode *edcl = init_node_tree();//init the tree
-
     FunctionDefinition *func_pos;
     DeclarationList *dl;
     int var_count = 0;
 
     fix_statement_list(NULL, compiler->statement_list, 0);
-//printf("1\n");
+
     for (func_pos = compiler->function_list; func_pos;
          func_pos = func_pos->next) {
-	if (func_pos->block == NULL)
+	    if (func_pos->block == NULL)
             continue;
-//printf("3\n");
         add_parameter_as_declaration(func_pos);
-//printf("4\n");
         fix_statement_list(func_pos->block,
-                           func_pos->block->statement_list, func_pos);
-//printf("5\n");
+            func_pos->block->statement_list, func_pos);
         add_return_function(func_pos);
-//printf("6\n");
     }
-//printf("2\n");
+
     for (dl = compiler->declaration_list; dl; dl = dl->next) {
         dl->declaration->variable_index = var_count;
-	var_count++;
+	    var_count++;
     }
 }

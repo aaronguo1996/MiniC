@@ -1,0 +1,6 @@
+void print(string str);
+
+integer a := 0;
+decimal b := 3.3;
+integer c := a;
+integer d := a+c;

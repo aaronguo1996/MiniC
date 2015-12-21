@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
-#include "minic.h"
-#include "node.h"
+#include "MC.h"
+#include "MVM.h"
+//#include "node.h"
+#include "share.h"
 
 FILE *treefp;
 int currNum = 1;
-
+/*
 void update_index(TreeNode *root)
 {
     if(root == NULL) return;
@@ -34,34 +36,35 @@ void fix_file()
                  returnArray($result);\n}\n?>";
     fwrite(buf,strlen(buf),1,treefp);
 }
-
+*/
 int main(int argc, char **argv)
 {
+
     MINIC_Compiler *compiler;
+	MVM_Executable *exe;
     FILE *fp;
 
-    if(argc <2){
-	fprintf(stderr,"usage:%s filename arg1, arg2, ...\n",argv[0]);
-	exit(1);
+    if (argc < 2) {
+	    fprintf(stderr,"usage:%s filename arg1, arg2, ...\n",argv[0]);
+	    exit(1);
     }
-
+    //printf("    \n");
     fp = fopen(argv[1],"r");
-    if(fp == NULL) {
-	fprintf(stderr, "%s not found.\n",argv[1]);
-	exit(1);
+    if (fp == NULL) {
+	    fprintf(stderr, "%s not found.\n",argv[1]);
+	    exit(1);
     }
 
     setlocale(LC_CTYPE, "");
     compiler = MINIC_create_compiler();
-    do_compile(compiler,fp);
-//    return;
-//    tree = nodes[0];
-    minic_fix_tree(compiler);
-//return;    
+    exe = MINIC_compile(compiler, fp);
+    mvm_disassemble(exe);
+	/*  Generate a graph
     treefp = fopen("back.php","at");
-    //printf("queue init\n");
     update_index(tree);
-//return;
     fix_file();
+	*/
+	
+	
     return 0;
 }

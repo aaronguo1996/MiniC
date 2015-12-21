@@ -42,7 +42,8 @@ minic_close_string_literal(void)
     int new_str_len;
 
     minic_add_string_literal('\0');
-    new_str = malloc(new_str_len+1);
+	new_str_len = strlen(st_string_literal_buffer);
+    new_str = malloc(new_str_len + 1);
     strcpy(new_str,st_string_literal_buffer);
     //mbstowcs(new_str, st_string_literal_buffer,strlen(new_str));
     new_str_len = strlen(new_str);
@@ -50,9 +51,9 @@ minic_close_string_literal(void)
        //minic_compile_error(minic_get_current_compiler()->current_line_number,
          //                 BAD_MULTIBYTE_CHARACTER_ERR,
           //                MESSAGE_ARGUMENT_END);
-   	printf("[%d]: %s",minic_get_current_compiler()->current_line_number, "bad close string");
-	exit(-1); 
-   }
+   	    printf("[%d]: %s",minic_get_current_compiler()->current_line_number, "bad close string");
+	    exit(-1); 
+    }
 
     return new_str;
 }

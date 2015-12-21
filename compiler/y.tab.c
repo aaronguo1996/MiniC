@@ -243,7 +243,7 @@ typedef union YYSTYPE
     Elseif		*elseif;
     TypeSpecifier	*type_specifier;
     AssignmentOperator	assignment_operator;
-    MINIC_BasicType	basic_type_specifier;
+    MVM_BasicType	basic_type_specifier;
     ArrayDimension	*array_dimension;
     MemberDeclaration	*member_declaration;
     //ClassDefinition     *class_definition;
@@ -611,20 +611,20 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    63,    63,    74,    82,    93,   101,   109,   120,   130,
-     140,   150,   160,   171,   182,   199,   217,   233,   242,   250,
-     259,   282,   302,   325,   347,   359,   377,   386,   401,   410,
-     422,   430,   445,   453,   467,   477,   487,   497,   507,   517,
-     527,   535,   550,   558,   572,   580,   594,   609,   617,   631,
-     645,   659,   674,   682,   696,   712,   720,   734,   748,   763,
-     771,   784,   797,   805,   817,   830,   838,   846,   857,   874,
-     893,   908,   925,   940,   956,   965,   974,   983,   992,  1002,
-    1012,  1022,  1031,  1046,  1065,  1079,  1095,  1109,  1126,  1134,
-    1146,  1162,  1175,  1192,  1201,  1210,  1225,  1237,  1245,  1253,
-    1262,  1270,  1278,  1286,  1294,  1302,  1311,  1331,  1356,  1378,
-    1406,  1414,  1426,  1448,  1457,  1471,  1494,  1528,  1557,  1587,
-    1596,  1605,  1622,  1631,  1641,  1657,  1673,  1688,  1710,  1709,
-    1728,  1743,  1837,  1845,  1857
+       0,    63,    63,    73,    81,    92,   100,   108,   119,   129,
+     139,   149,   159,   170,   181,   198,   216,   232,   241,   249,
+     258,   281,   301,   324,   346,   358,   376,   385,   400,   409,
+     421,   429,   444,   452,   466,   476,   486,   496,   506,   516,
+     526,   534,   549,   557,   571,   579,   593,   608,   616,   630,
+     644,   658,   673,   681,   695,   711,   719,   733,   747,   762,
+     770,   783,   796,   804,   816,   829,   837,   845,   856,   873,
+     892,   907,   924,   939,   955,   964,   973,   982,   991,  1001,
+    1011,  1021,  1030,  1045,  1064,  1078,  1094,  1108,  1125,  1133,
+    1145,  1161,  1174,  1191,  1200,  1209,  1224,  1236,  1244,  1252,
+    1261,  1269,  1277,  1285,  1293,  1301,  1310,  1330,  1355,  1377,
+    1405,  1413,  1425,  1447,  1456,  1470,  1493,  1527,  1556,  1586,
+    1595,  1604,  1621,  1630,  1640,  1656,  1672,  1687,  1709,  1708,
+    1727,  1742,  1836,  1844,  1856
 };
 #endif
 
@@ -1781,14 +1781,13 @@ yyreduce:
 			    program->child = edcl;
 			    nodes[node_idx++] = program;
 			    tree = program;
-				
 			}
     break;
 
   case 3:
 
 /* Line 1806 of yacc.c  */
-#line 75 "minic.y"
+#line 74 "minic.y"
     {
 			    TreeNode *program = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(program->name,"external_declaration_list");
@@ -1801,7 +1800,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 83 "minic.y"
+#line 82 "minic.y"
     {
 			    TreeNode *program = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(program->name,"external_declaration_list");
@@ -1816,7 +1815,7 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 94 "minic.y"
+#line 93 "minic.y"
     {
 			    TreeNode *fd = nodes[--node_idx];
 			    TreeNode *edcl = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1829,7 +1828,7 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 102 "minic.y"
+#line 101 "minic.y"
     {
                             TreeNode *fd = nodes[--node_idx];
                             TreeNode *edcl = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1842,7 +1841,7 @@ yyreduce:
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 110 "minic.y"
+#line 109 "minic.y"
     {
 			    MINIC_Compiler *compiler = minic_get_current_compiler();
 			    compiler->statement_list = minic_chain_statement_list(compiler->statement_list,(yyvsp[(1) - (1)].statement));
@@ -1857,9 +1856,9 @@ yyreduce:
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 121 "minic.y"
+#line 120 "minic.y"
     {
-                            (yyval.basic_type_specifier) = MINIC_VOID_TYPE;
+                            (yyval.basic_type_specifier) = MVM_VOID_TYPE;
                             TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(ts->name,"basic_type_specifier");
                             TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1872,9 +1871,9 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 131 "minic.y"
+#line 130 "minic.y"
     { 
-			    (yyval.basic_type_specifier) = MINIC_BOOLEAN_TYPE;
+			    (yyval.basic_type_specifier) = MVM_BOOLEAN_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1887,9 +1886,9 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 141 "minic.y"
+#line 140 "minic.y"
     { 
-			    (yyval.basic_type_specifier) = MINIC_INTEGER_TYPE;
+			    (yyval.basic_type_specifier) = MVM_INTEGER_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *in = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1902,9 +1901,9 @@ yyreduce:
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 151 "minic.y"
+#line 150 "minic.y"
     { 
-			    (yyval.basic_type_specifier) = MINIC_DECIMAL_TYPE;
+			    (yyval.basic_type_specifier) = MVM_DECIMAL_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *dn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1917,9 +1916,9 @@ yyreduce:
   case 12:
 
 /* Line 1806 of yacc.c  */
-#line 161 "minic.y"
+#line 160 "minic.y"
     { 
-			    (yyval.basic_type_specifier) = MINIC_STRING_TYPE;  
+			    (yyval.basic_type_specifier) = MVM_STRING_TYPE;  
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *sn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1932,7 +1931,7 @@ yyreduce:
   case 13:
 
 /* Line 1806 of yacc.c  */
-#line 172 "minic.y"
+#line 171 "minic.y"
     {
 			    (yyval.type_specifier) = minic_create_class_type_specifier((yyvsp[(1) - (1)].identifier));
 			    TreeNode *id = malloc(sizeof(TreeNode));
@@ -1947,7 +1946,7 @@ yyreduce:
   case 14:
 
 /* Line 1806 of yacc.c  */
-#line 183 "minic.y"
+#line 182 "minic.y"
     {
 			    TypeSpecifier *basic_type
 				= minic_create_type_specifier((yyvsp[(1) - (3)].basic_type_specifier));
@@ -1969,7 +1968,7 @@ yyreduce:
   case 15:
 
 /* Line 1806 of yacc.c  */
-#line 200 "minic.y"
+#line 199 "minic.y"
     {
 			    TypeSpecifier *class_type
 				= minic_create_class_type_specifier((yyvsp[(1) - (3)].identifier));
@@ -1992,7 +1991,7 @@ yyreduce:
   case 16:
 
 /* Line 1806 of yacc.c  */
-#line 218 "minic.y"
+#line 217 "minic.y"
     {
 			    (yyval.type_specifier) = minic_create_array_type_specifier((yyvsp[(1) - (3)].type_specifier));
                             TreeNode *rb = malloc(sizeof(TreeNode));
@@ -2012,7 +2011,7 @@ yyreduce:
   case 17:
 
 /* Line 1806 of yacc.c  */
-#line 234 "minic.y"
+#line 233 "minic.y"
     {
 			    (yyval.type_specifier) = minic_create_type_specifier((yyvsp[(1) - (1)].basic_type_specifier));
 			    TreeNode *bts = nodes[--node_idx];
@@ -2026,7 +2025,7 @@ yyreduce:
   case 18:
 
 /* Line 1806 of yacc.c  */
-#line 243 "minic.y"
+#line 242 "minic.y"
     {
 			    TreeNode *tspc = nodes[--node_idx];
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2039,7 +2038,7 @@ yyreduce:
   case 19:
 
 /* Line 1806 of yacc.c  */
-#line 251 "minic.y"
+#line 250 "minic.y"
     {
                             TreeNode *tspc = nodes[--node_idx];
                             TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2052,7 +2051,7 @@ yyreduce:
   case 20:
 
 /* Line 1806 of yacc.c  */
-#line 260 "minic.y"
+#line 259 "minic.y"
     {
 			    minic_function_define((yyvsp[(1) - (6)].type_specifier),(yyvsp[(2) - (6)].identifier),(yyvsp[(4) - (6)].parameter_list),(yyvsp[(6) - (6)].block));
 			    TreeNode *bnode = nodes[--node_idx];
@@ -2080,7 +2079,7 @@ yyreduce:
   case 21:
 
 /* Line 1806 of yacc.c  */
-#line 283 "minic.y"
+#line 282 "minic.y"
     {
 			    minic_function_define((yyvsp[(1) - (5)].type_specifier),(yyvsp[(2) - (5)].identifier),NULL,(yyvsp[(5) - (5)].block));
 			    TreeNode *bnode = nodes[--node_idx];
@@ -2105,7 +2104,7 @@ yyreduce:
   case 22:
 
 /* Line 1806 of yacc.c  */
-#line 303 "minic.y"
+#line 302 "minic.y"
     {
 			    minic_function_define((yyvsp[(1) - (6)].type_specifier),(yyvsp[(2) - (6)].identifier),(yyvsp[(4) - (6)].parameter_list),NULL);
 			    TreeNode *semnode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2133,7 +2132,7 @@ yyreduce:
   case 23:
 
 /* Line 1806 of yacc.c  */
-#line 326 "minic.y"
+#line 325 "minic.y"
     {
 			    minic_function_define((yyvsp[(1) - (5)].type_specifier),(yyvsp[(2) - (5)].identifier),NULL,NULL);
 			    TreeNode *semnode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2159,7 +2158,7 @@ yyreduce:
   case 24:
 
 /* Line 1806 of yacc.c  */
-#line 348 "minic.y"
+#line 347 "minic.y"
     {
 			    (yyval.parameter_list) = minic_create_parameter((yyvsp[(1) - (2)].type_specifier),(yyvsp[(2) - (2)].identifier));
 			    TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2176,7 +2175,7 @@ yyreduce:
   case 25:
 
 /* Line 1806 of yacc.c  */
-#line 360 "minic.y"
+#line 359 "minic.y"
     {
 			    (yyval.parameter_list) = minic_chain_parameter((yyvsp[(1) - (4)].parameter_list),(yyvsp[(3) - (4)].type_specifier),(yyvsp[(4) - (4)].identifier));
 			    TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2198,7 +2197,7 @@ yyreduce:
   case 26:
 
 /* Line 1806 of yacc.c  */
-#line 378 "minic.y"
+#line 377 "minic.y"
     {
 			    (yyval.argument_list) = minic_create_argument_list((yyvsp[(1) - (1)].expression));
 			    TreeNode *ase = nodes[--node_idx];
@@ -2212,7 +2211,7 @@ yyreduce:
   case 27:
 
 /* Line 1806 of yacc.c  */
-#line 387 "minic.y"
+#line 386 "minic.y"
     {
 			    (yyval.argument_list) = minic_chain_argument_list((yyvsp[(1) - (3)].argument_list),(yyvsp[(3) - (3)].expression));
 			    TreeNode *ase = nodes[--node_idx];
@@ -2231,7 +2230,7 @@ yyreduce:
   case 28:
 
 /* Line 1806 of yacc.c  */
-#line 402 "minic.y"
+#line 401 "minic.y"
     {
 			    (yyval.statement_list) = minic_create_statement_list((yyvsp[(1) - (1)].statement));
 			    TreeNode *st = nodes[--node_idx];
@@ -2245,7 +2244,7 @@ yyreduce:
   case 29:
 
 /* Line 1806 of yacc.c  */
-#line 411 "minic.y"
+#line 410 "minic.y"
     {
 			    (yyval.statement_list) = minic_chain_statement_list((yyvsp[(1) - (2)].statement_list),(yyvsp[(2) - (2)].statement));
 			    TreeNode *st = nodes[--node_idx];
@@ -2261,7 +2260,7 @@ yyreduce:
   case 30:
 
 /* Line 1806 of yacc.c  */
-#line 423 "minic.y"
+#line 422 "minic.y"
     {
 			    TreeNode *ase = nodes[--node_idx];
 			    TreeNode *exp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2274,7 +2273,7 @@ yyreduce:
   case 31:
 
 /* Line 1806 of yacc.c  */
-#line 431 "minic.y"
+#line 430 "minic.y"
     {
 			    (yyval.expression) = minic_create_comma_expression((yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
 			    TreeNode *ase = nodes[--node_idx];
@@ -2293,7 +2292,7 @@ yyreduce:
   case 32:
 
 /* Line 1806 of yacc.c  */
-#line 446 "minic.y"
+#line 445 "minic.y"
     {
 			    TreeNode *loe = nodes[--node_idx];
 			    TreeNode *ase = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2306,7 +2305,7 @@ yyreduce:
   case 33:
 
 /* Line 1806 of yacc.c  */
-#line 454 "minic.y"
+#line 453 "minic.y"
     {
 			    (yyval.expression) = minic_create_assign_expression((yyvsp[(1) - (3)].expression),(yyvsp[(2) - (3)].assignment_operator),(yyvsp[(3) - (3)].expression));
 			    TreeNode *ase = nodes[--node_idx];
@@ -2324,7 +2323,7 @@ yyreduce:
   case 34:
 
 /* Line 1806 of yacc.c  */
-#line 468 "minic.y"
+#line 467 "minic.y"
     { 
 			    (yyval.assignment_operator) = NORMAL_ASSIGN;
 			    TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2339,7 +2338,7 @@ yyreduce:
   case 35:
 
 /* Line 1806 of yacc.c  */
-#line 478 "minic.y"
+#line 477 "minic.y"
     {
 			    (yyval.assignment_operator) = ADD_ASSIGN;
 			    TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2354,7 +2353,7 @@ yyreduce:
   case 36:
 
 /* Line 1806 of yacc.c  */
-#line 488 "minic.y"
+#line 487 "minic.y"
     { 
                             TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(assign->name,"-=");  
@@ -2369,7 +2368,7 @@ yyreduce:
   case 37:
 
 /* Line 1806 of yacc.c  */
-#line 498 "minic.y"
+#line 497 "minic.y"
     { 
 			    (yyval.assignment_operator) = MUL_ASSIGN;	
                             TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2384,7 +2383,7 @@ yyreduce:
   case 38:
 
 /* Line 1806 of yacc.c  */
-#line 508 "minic.y"
+#line 507 "minic.y"
     { 
 			    (yyval.assignment_operator) = DIV_ASSIGN;	
                             TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2399,7 +2398,7 @@ yyreduce:
   case 39:
 
 /* Line 1806 of yacc.c  */
-#line 518 "minic.y"
+#line 517 "minic.y"
     { 
 			    (yyval.assignment_operator) = MOD_ASSIGN;	
                             TreeNode *assign = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2414,7 +2413,7 @@ yyreduce:
   case 40:
 
 /* Line 1806 of yacc.c  */
-#line 528 "minic.y"
+#line 527 "minic.y"
     {
 			    TreeNode *lae = nodes[--node_idx];
 			    TreeNode *loe = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2427,7 +2426,7 @@ yyreduce:
   case 41:
 
 /* Line 1806 of yacc.c  */
-#line 536 "minic.y"
+#line 535 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(LOGICAL_OR_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
 			    TreeNode *lae = nodes[--node_idx];
@@ -2446,7 +2445,7 @@ yyreduce:
   case 42:
 
 /* Line 1806 of yacc.c  */
-#line 551 "minic.y"
+#line 550 "minic.y"
     {
 			    TreeNode *eexp = nodes[--node_idx];
 			    TreeNode *lae = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2459,7 +2458,7 @@ yyreduce:
   case 43:
 
 /* Line 1806 of yacc.c  */
-#line 559 "minic.y"
+#line 558 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(LOGICAL_AND_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
 			    TreeNode *eexp = nodes[--node_idx];
@@ -2477,7 +2476,7 @@ yyreduce:
   case 44:
 
 /* Line 1806 of yacc.c  */
-#line 573 "minic.y"
+#line 572 "minic.y"
     {
 			    TreeNode *rexp = nodes[--node_idx];
 			    TreeNode *eexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2490,7 +2489,7 @@ yyreduce:
   case 45:
 
 /* Line 1806 of yacc.c  */
-#line 581 "minic.y"
+#line 580 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(EQ_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
 			    TreeNode *rexp = nodes[--node_idx];
@@ -2509,7 +2508,7 @@ yyreduce:
   case 46:
 
 /* Line 1806 of yacc.c  */
-#line 595 "minic.y"
+#line 594 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(NE_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
 			    TreeNode *rexp = nodes[--node_idx];
@@ -2528,7 +2527,7 @@ yyreduce:
   case 47:
 
 /* Line 1806 of yacc.c  */
-#line 610 "minic.y"
+#line 609 "minic.y"
     {
 			    TreeNode *aexp = nodes[--node_idx];
                             TreeNode *rexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2541,7 +2540,7 @@ yyreduce:
   case 48:
 
 /* Line 1806 of yacc.c  */
-#line 618 "minic.y"
+#line 617 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(GT_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2560,7 +2559,7 @@ yyreduce:
   case 49:
 
 /* Line 1806 of yacc.c  */
-#line 632 "minic.y"
+#line 631 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(GE_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2579,7 +2578,7 @@ yyreduce:
   case 50:
 
 /* Line 1806 of yacc.c  */
-#line 646 "minic.y"
+#line 645 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(LT_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2598,7 +2597,7 @@ yyreduce:
   case 51:
 
 /* Line 1806 of yacc.c  */
-#line 660 "minic.y"
+#line 659 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(LE_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2617,7 +2616,7 @@ yyreduce:
   case 52:
 
 /* Line 1806 of yacc.c  */
-#line 675 "minic.y"
+#line 674 "minic.y"
     {
 			    TreeNode *me = nodes[--node_idx];
 			    TreeNode *aexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2630,7 +2629,7 @@ yyreduce:
   case 53:
 
 /* Line 1806 of yacc.c  */
-#line 683 "minic.y"
+#line 682 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(ADD_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2649,7 +2648,7 @@ yyreduce:
   case 54:
 
 /* Line 1806 of yacc.c  */
-#line 697 "minic.y"
+#line 696 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(SUB_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2668,7 +2667,7 @@ yyreduce:
   case 55:
 
 /* Line 1806 of yacc.c  */
-#line 713 "minic.y"
+#line 712 "minic.y"
     {
 			    TreeNode *uexp = nodes[--node_idx];
 			    TreeNode *me = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2681,7 +2680,7 @@ yyreduce:
   case 56:
 
 /* Line 1806 of yacc.c  */
-#line 721 "minic.y"
+#line 720 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(MUL_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2700,7 +2699,7 @@ yyreduce:
   case 57:
 
 /* Line 1806 of yacc.c  */
-#line 735 "minic.y"
+#line 734 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(DIV_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2719,7 +2718,7 @@ yyreduce:
   case 58:
 
 /* Line 1806 of yacc.c  */
-#line 749 "minic.y"
+#line 748 "minic.y"
     {
 			    (yyval.expression) = minic_create_binary_expression(MOD_EXPRESSION,(yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].expression));
                             TreeNode *aexp = nodes[--node_idx];
@@ -2738,7 +2737,7 @@ yyreduce:
   case 59:
 
 /* Line 1806 of yacc.c  */
-#line 764 "minic.y"
+#line 763 "minic.y"
     {
 			    TreeNode *postexp = nodes[--node_idx];
 			    TreeNode *unaryexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2751,7 +2750,7 @@ yyreduce:
   case 60:
 
 /* Line 1806 of yacc.c  */
-#line 772 "minic.y"
+#line 771 "minic.y"
     { 
 			    (yyval.expression) = minic_create_minus_expression((yyvsp[(2) - (2)].expression));
                             TreeNode *exp = nodes[--node_idx];
@@ -2769,7 +2768,7 @@ yyreduce:
   case 61:
 
 /* Line 1806 of yacc.c  */
-#line 785 "minic.y"
+#line 784 "minic.y"
     { 
                             TreeNode *exp = nodes[--node_idx];
                             TreeNode *sub = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2786,7 +2785,7 @@ yyreduce:
   case 62:
 
 /* Line 1806 of yacc.c  */
-#line 798 "minic.y"
+#line 797 "minic.y"
     {
 			    TreeNode *pexp = nodes[--node_idx];
 			    TreeNode *postexp = malloc(sizeof(TreeNode));
@@ -2799,7 +2798,7 @@ yyreduce:
   case 63:
 
 /* Line 1806 of yacc.c  */
-#line 806 "minic.y"
+#line 805 "minic.y"
     {
                             (yyval.expression) = minic_create_incdec_expression((yyvsp[(1) - (2)].expression),INCREMENT_EXPRESSION);
                             TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2816,7 +2815,7 @@ yyreduce:
   case 64:
 
 /* Line 1806 of yacc.c  */
-#line 818 "minic.y"
+#line 817 "minic.y"
     {
                             (yyval.expression) = minic_create_incdec_expression((yyvsp[(1) - (2)].expression),DECREMENT_EXPRESSION);
                             TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2833,7 +2832,7 @@ yyreduce:
   case 65:
 
 /* Line 1806 of yacc.c  */
-#line 831 "minic.y"
+#line 830 "minic.y"
     {
 			    TreeNode *pexp = nodes[--node_idx];
 			    TreeNode *postexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2846,7 +2845,7 @@ yyreduce:
   case 66:
 
 /* Line 1806 of yacc.c  */
-#line 839 "minic.y"
+#line 838 "minic.y"
     {
 			    TreeNode *ac = nodes[--node_idx];
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2859,7 +2858,7 @@ yyreduce:
   case 67:
 
 /* Line 1806 of yacc.c  */
-#line 847 "minic.y"
+#line 846 "minic.y"
     { 
                             (yyval.expression) = minic_create_identifier_expression((yyvsp[(1) - (1)].identifier));
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2874,7 +2873,7 @@ yyreduce:
   case 68:
 
 /* Line 1806 of yacc.c  */
-#line 858 "minic.y"
+#line 857 "minic.y"
     {
 			    (yyval.expression) = minic_create_index_expression((yyvsp[(1) - (4)].expression),(yyvsp[(3) - (4)].expression));
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2896,7 +2895,7 @@ yyreduce:
   case 69:
 
 /* Line 1806 of yacc.c  */
-#line 875 "minic.y"
+#line 874 "minic.y"
     {
 			    Expression *identifier = minic_create_identifier_expression((yyvsp[(1) - (4)].identifier));
 			    (yyval.expression) = minic_create_index_expression(identifier,(yyvsp[(3) - (4)].expression));
@@ -2920,7 +2919,7 @@ yyreduce:
   case 70:
 
 /* Line 1806 of yacc.c  */
-#line 894 "minic.y"
+#line 893 "minic.y"
     {
 			    (yyval.expression) = minic_create_member_expression((yyvsp[(1) - (3)].expression),(yyvsp[(3) - (3)].identifier));
 			    TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2940,7 +2939,7 @@ yyreduce:
   case 71:
 
 /* Line 1806 of yacc.c  */
-#line 909 "minic.y"
+#line 908 "minic.y"
     {
 			    (yyval.expression) = minic_create_function_call_expression((yyvsp[(1) - (4)].expression),(yyvsp[(3) - (4)].argument_list));
 			    TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2962,7 +2961,7 @@ yyreduce:
   case 72:
 
 /* Line 1806 of yacc.c  */
-#line 926 "minic.y"
+#line 925 "minic.y"
     {
 			    (yyval.expression) = minic_create_function_call_expression((yyvsp[(1) - (3)].expression),NULL);
                             TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -2982,7 +2981,7 @@ yyreduce:
   case 73:
 
 /* Line 1806 of yacc.c  */
-#line 941 "minic.y"
+#line 940 "minic.y"
     { 
 			    (yyval.expression) = (yyvsp[(2) - (3)].expression);
                             TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3003,7 +3002,7 @@ yyreduce:
   case 74:
 
 /* Line 1806 of yacc.c  */
-#line 957 "minic.y"
+#line 956 "minic.y"
     {
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             sprintf(id->name,"%d",(yyvsp[(1) - (1)].expression)->u.integer_value);
@@ -3017,7 +3016,7 @@ yyreduce:
   case 75:
 
 /* Line 1806 of yacc.c  */
-#line 966 "minic.y"
+#line 965 "minic.y"
     {
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             sprintf(id->name,"%f",(yyvsp[(1) - (1)].expression)->u.decimal_value);
@@ -3031,7 +3030,7 @@ yyreduce:
   case 76:
 
 /* Line 1806 of yacc.c  */
-#line 975 "minic.y"
+#line 974 "minic.y"
     {
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             sprintf(id->name,"%s",(yyvsp[(1) - (1)].expression)->u.string_value);
@@ -3045,7 +3044,7 @@ yyreduce:
   case 77:
 
 /* Line 1806 of yacc.c  */
-#line 984 "minic.y"
+#line 983 "minic.y"
     {
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             sprintf(id->name,"%s",(yyvsp[(1) - (1)].expression)->u.string_value);
@@ -3059,9 +3058,9 @@ yyreduce:
   case 78:
 
 /* Line 1806 of yacc.c  */
-#line 993 "minic.y"
+#line 992 "minic.y"
     { 
-			    (yyval.expression) = minic_create_boolean_expression(MINIC_TRUE);
+			    (yyval.expression) = minic_create_boolean_expression(MVM_TRUE);
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(id->name,"true");
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3074,9 +3073,9 @@ yyreduce:
   case 79:
 
 /* Line 1806 of yacc.c  */
-#line 1003 "minic.y"
+#line 1002 "minic.y"
     { 
-			    (yyval.expression) = minic_create_boolean_expression(MINIC_FALSE);
+			    (yyval.expression) = minic_create_boolean_expression(MVM_FALSE);
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(id->name,"false");
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3089,7 +3088,7 @@ yyreduce:
   case 80:
 
 /* Line 1806 of yacc.c  */
-#line 1013 "minic.y"
+#line 1012 "minic.y"
     {
 			    (yyval.expression) = minic_create_null_expression();
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3104,7 +3103,7 @@ yyreduce:
   case 81:
 
 /* Line 1806 of yacc.c  */
-#line 1023 "minic.y"
+#line 1022 "minic.y"
     {
                             TreeNode *id = nodes[--node_idx];
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3117,7 +3116,7 @@ yyreduce:
   case 82:
 
 /* Line 1806 of yacc.c  */
-#line 1032 "minic.y"
+#line 1031 "minic.y"
     {
 			    (yyval.expression) = minic_create_array_literal_expression((yyvsp[(2) - (3)].expression_list));
 			    TreeNode *rc = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3137,7 +3136,7 @@ yyreduce:
   case 83:
 
 /* Line 1806 of yacc.c  */
-#line 1047 "minic.y"
+#line 1046 "minic.y"
     {
 			    (yyval.expression) = minic_create_array_literal_expression((yyvsp[(2) - (4)].expression_list));
                             TreeNode *rc = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3160,7 +3159,7 @@ yyreduce:
   case 84:
 
 /* Line 1806 of yacc.c  */
-#line 1066 "minic.y"
+#line 1065 "minic.y"
     {
 			    (yyval.expression) = minic_create_basic_array_creation((yyvsp[(2) - (3)].basic_type_specifier),(yyvsp[(3) - (3)].array_dimension),NULL);
 			    TreeNode *del = nodes[--node_idx];
@@ -3179,7 +3178,7 @@ yyreduce:
   case 85:
 
 /* Line 1806 of yacc.c  */
-#line 1080 "minic.y"
+#line 1079 "minic.y"
     {
 			    (yyval.expression) = minic_create_basic_array_creation((yyvsp[(2) - (4)].basic_type_specifier),(yyvsp[(3) - (4)].array_dimension),(yyvsp[(4) - (4)].array_dimension));
 			    TreeNode *dl = nodes[--node_idx];
@@ -3200,7 +3199,7 @@ yyreduce:
   case 86:
 
 /* Line 1806 of yacc.c  */
-#line 1096 "minic.y"
+#line 1095 "minic.y"
     {
                             (yyval.expression) = minic_create_class_array_creation((yyvsp[(2) - (3)].type_specifier),(yyvsp[(3) - (3)].array_dimension),NULL);
                             TreeNode *del = nodes[--node_idx];
@@ -3219,7 +3218,7 @@ yyreduce:
   case 87:
 
 /* Line 1806 of yacc.c  */
-#line 1110 "minic.y"
+#line 1109 "minic.y"
     {
                             (yyval.expression) = minic_create_class_array_creation((yyvsp[(2) - (4)].type_specifier),(yyvsp[(3) - (4)].array_dimension),(yyvsp[(4) - (4)].array_dimension));
                             TreeNode *dl = nodes[--node_idx];
@@ -3240,7 +3239,7 @@ yyreduce:
   case 88:
 
 /* Line 1806 of yacc.c  */
-#line 1127 "minic.y"
+#line 1126 "minic.y"
     {
 			    TreeNode *de = nodes[--node_idx];
 			    TreeNode *del = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3253,7 +3252,7 @@ yyreduce:
   case 89:
 
 /* Line 1806 of yacc.c  */
-#line 1135 "minic.y"
+#line 1134 "minic.y"
     {
 			    (yyval.array_dimension) = minic_chain_array_dimension((yyvsp[(1) - (2)].array_dimension),(yyvsp[(2) - (2)].array_dimension));
 			    TreeNode *de = nodes[--node_idx];
@@ -3269,7 +3268,7 @@ yyreduce:
   case 90:
 
 /* Line 1806 of yacc.c  */
-#line 1147 "minic.y"
+#line 1146 "minic.y"
     {
 			    (yyval.array_dimension) = minic_create_array_dimension((yyvsp[(2) - (3)].expression));
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3289,7 +3288,7 @@ yyreduce:
   case 91:
 
 /* Line 1806 of yacc.c  */
-#line 1163 "minic.y"
+#line 1162 "minic.y"
     {
 			    (yyval.array_dimension) = minic_create_array_dimension(NULL);
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3307,7 +3306,7 @@ yyreduce:
   case 92:
 
 /* Line 1806 of yacc.c  */
-#line 1176 "minic.y"
+#line 1175 "minic.y"
     {
 			    (yyval.array_dimension) = minic_chain_array_dimension((yyvsp[(1) - (3)].array_dimension),minic_create_array_dimension(NULL));
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3327,7 +3326,7 @@ yyreduce:
   case 93:
 
 /* Line 1806 of yacc.c  */
-#line 1192 "minic.y"
+#line 1191 "minic.y"
     {
 			    (yyval.expression_list) = NULL;
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3342,7 +3341,7 @@ yyreduce:
   case 94:
 
 /* Line 1806 of yacc.c  */
-#line 1202 "minic.y"
+#line 1201 "minic.y"
     {
 			    (yyval.expression_list) = minic_create_expression_list((yyvsp[(1) - (1)].expression));
 			    TreeNode *ae = nodes[--node_idx];
@@ -3356,7 +3355,7 @@ yyreduce:
   case 95:
 
 /* Line 1806 of yacc.c  */
-#line 1211 "minic.y"
+#line 1210 "minic.y"
     {
 			    (yyval.expression_list) = minic_chain_expression_list((yyvsp[(1) - (3)].expression_list),(yyvsp[(3) - (3)].expression));
 			    TreeNode *ae = nodes[--node_idx];
@@ -3375,7 +3374,7 @@ yyreduce:
   case 96:
 
 /* Line 1806 of yacc.c  */
-#line 1226 "minic.y"
+#line 1225 "minic.y"
     {
 			    (yyval.statement) = minic_create_expression_statement((yyvsp[(1) - (2)].expression));
 			    TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3392,7 +3391,7 @@ yyreduce:
   case 97:
 
 /* Line 1806 of yacc.c  */
-#line 1238 "minic.y"
+#line 1237 "minic.y"
     {
 			    TreeNode *stmt = nodes[--node_idx];
 			    TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3405,7 +3404,7 @@ yyreduce:
   case 98:
 
 /* Line 1806 of yacc.c  */
-#line 1246 "minic.y"
+#line 1245 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3418,7 +3417,7 @@ yyreduce:
   case 99:
 
 /* Line 1806 of yacc.c  */
-#line 1254 "minic.y"
+#line 1253 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3431,7 +3430,7 @@ yyreduce:
   case 100:
 
 /* Line 1806 of yacc.c  */
-#line 1263 "minic.y"
+#line 1262 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3444,7 +3443,7 @@ yyreduce:
   case 101:
 
 /* Line 1806 of yacc.c  */
-#line 1271 "minic.y"
+#line 1270 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3457,7 +3456,7 @@ yyreduce:
   case 102:
 
 /* Line 1806 of yacc.c  */
-#line 1279 "minic.y"
+#line 1278 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3470,7 +3469,7 @@ yyreduce:
   case 103:
 
 /* Line 1806 of yacc.c  */
-#line 1287 "minic.y"
+#line 1286 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3483,7 +3482,7 @@ yyreduce:
   case 104:
 
 /* Line 1806 of yacc.c  */
-#line 1295 "minic.y"
+#line 1294 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3496,7 +3495,7 @@ yyreduce:
   case 105:
 
 /* Line 1806 of yacc.c  */
-#line 1303 "minic.y"
+#line 1302 "minic.y"
     {
                             TreeNode *stmt = nodes[--node_idx];
                             TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3509,7 +3508,7 @@ yyreduce:
   case 106:
 
 /* Line 1806 of yacc.c  */
-#line 1312 "minic.y"
+#line 1311 "minic.y"
     {
 			    (yyval.statement) = minic_create_if_statement((yyvsp[(3) - (5)].expression),(yyvsp[(5) - (5)].block),NULL,NULL);
 			    TreeNode *bnode = nodes[--node_idx];
@@ -3534,7 +3533,7 @@ yyreduce:
   case 107:
 
 /* Line 1806 of yacc.c  */
-#line 1332 "minic.y"
+#line 1331 "minic.y"
     {
 			    (yyval.statement) = minic_create_if_statement((yyvsp[(3) - (7)].expression),(yyvsp[(5) - (7)].block),NULL,(yyvsp[(7) - (7)].block));
 			    TreeNode *block = nodes[--node_idx];
@@ -3564,7 +3563,7 @@ yyreduce:
   case 108:
 
 /* Line 1806 of yacc.c  */
-#line 1357 "minic.y"
+#line 1356 "minic.y"
     {
 			    (yyval.statement) = minic_create_if_statement((yyvsp[(3) - (6)].expression),(yyvsp[(5) - (6)].block),(yyvsp[(6) - (6)].elseif),NULL);
                             TreeNode *elsenode = nodes[--node_idx];
@@ -3591,7 +3590,7 @@ yyreduce:
   case 109:
 
 /* Line 1806 of yacc.c  */
-#line 1379 "minic.y"
+#line 1378 "minic.y"
     {
 			    (yyval.statement) = minic_create_if_statement((yyvsp[(3) - (8)].expression),(yyvsp[(5) - (8)].block),(yyvsp[(6) - (8)].elseif),(yyvsp[(8) - (8)].block));
                             TreeNode *block = nodes[--node_idx];
@@ -3623,7 +3622,7 @@ yyreduce:
   case 110:
 
 /* Line 1806 of yacc.c  */
-#line 1407 "minic.y"
+#line 1406 "minic.y"
     {
 			    TreeNode *elseifnode = nodes[--node_idx];
 			    TreeNode *elselist = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3636,7 +3635,7 @@ yyreduce:
   case 111:
 
 /* Line 1806 of yacc.c  */
-#line 1415 "minic.y"
+#line 1414 "minic.y"
     {
 			    (yyval.elseif) = minic_chain_elseif_list((yyvsp[(1) - (2)].elseif),(yyvsp[(2) - (2)].elseif));
 			    TreeNode *elseifnode = nodes[--node_idx];
@@ -3652,7 +3651,7 @@ yyreduce:
   case 112:
 
 /* Line 1806 of yacc.c  */
-#line 1427 "minic.y"
+#line 1426 "minic.y"
     {
 			    (yyval.elseif) = minic_create_elseif((yyvsp[(3) - (5)].expression),(yyvsp[(5) - (5)].block));
                             TreeNode *bnode = nodes[--node_idx];
@@ -3677,7 +3676,7 @@ yyreduce:
   case 113:
 
 /* Line 1806 of yacc.c  */
-#line 1448 "minic.y"
+#line 1447 "minic.y"
     {
 			    (yyval.identifier) = NULL;
 			    TreeNode *node = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3692,7 +3691,7 @@ yyreduce:
   case 114:
 
 /* Line 1806 of yacc.c  */
-#line 1458 "minic.y"
+#line 1457 "minic.y"
     {
 			    (yyval.identifier) = (yyvsp[(1) - (2)].identifier);
 			    TreeNode *colon = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3710,7 +3709,7 @@ yyreduce:
   case 115:
 
 /* Line 1806 of yacc.c  */
-#line 1472 "minic.y"
+#line 1471 "minic.y"
     {
 			    (yyval.statement) = minic_create_while_statement((yyvsp[(1) - (6)].identifier),(yyvsp[(4) - (6)].expression),(yyvsp[(6) - (6)].block));
                             TreeNode *bnode = nodes[--node_idx];
@@ -3737,7 +3736,7 @@ yyreduce:
   case 116:
 
 /* Line 1806 of yacc.c  */
-#line 1496 "minic.y"
+#line 1495 "minic.y"
     {
 			    (yyval.statement) = minic_create_for_statement((yyvsp[(1) - (10)].identifier),(yyvsp[(4) - (10)].expression),(yyvsp[(6) - (10)].expression),(yyvsp[(8) - (10)].expression),(yyvsp[(10) - (10)].block));
                             TreeNode *bnode = nodes[--node_idx];
@@ -3774,7 +3773,7 @@ yyreduce:
   case 117:
 
 /* Line 1806 of yacc.c  */
-#line 1529 "minic.y"
+#line 1528 "minic.y"
     {
 			    (yyval.statement) = minic_create_do_while_statement((yyvsp[(1) - (8)].identifier),(yyvsp[(3) - (8)].block),(yyvsp[(6) - (8)].expression));
 			    TreeNode *semi = malloc(sizeof(TreeNode));
@@ -3807,7 +3806,7 @@ yyreduce:
   case 118:
 
 /* Line 1806 of yacc.c  */
-#line 1558 "minic.y"
+#line 1557 "minic.y"
     {
 			    (yyval.statement) = minic_create_foreach_statement((yyvsp[(1) - (8)].identifier),(yyvsp[(4) - (8)].identifier),(yyvsp[(6) - (8)].expression),(yyvsp[(8) - (8)].block));
                             TreeNode *bnode = nodes[--node_idx];
@@ -3831,7 +3830,7 @@ yyreduce:
                             TreeNode *lnode = nodes[--node_idx];
                             lnode->sibling = ifnode;
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"while_statement");
+                            strcpy(pexp->name,"foreach_statement");
                             pexp->child = lnode;
                             nodes[node_idx++] = pexp;
 			}
@@ -3840,7 +3839,7 @@ yyreduce:
   case 119:
 
 /* Line 1806 of yacc.c  */
-#line 1587 "minic.y"
+#line 1586 "minic.y"
     { 
 			    (yyval.expression) = NULL;
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3855,7 +3854,7 @@ yyreduce:
   case 120:
 
 /* Line 1806 of yacc.c  */
-#line 1597 "minic.y"
+#line 1596 "minic.y"
     {
                             TreeNode *empty = nodes[--node_idx];
                             TreeNode *eopt = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3868,7 +3867,7 @@ yyreduce:
   case 121:
 
 /* Line 1806 of yacc.c  */
-#line 1606 "minic.y"
+#line 1605 "minic.y"
     {
 			    (yyval.statement) = minic_create_return_statement((yyvsp[(2) - (3)].expression));
 			    TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3888,7 +3887,7 @@ yyreduce:
   case 122:
 
 /* Line 1806 of yacc.c  */
-#line 1622 "minic.y"
+#line 1621 "minic.y"
     { 
 			    (yyval.identifier) = NULL;
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3903,7 +3902,7 @@ yyreduce:
   case 123:
 
 /* Line 1806 of yacc.c  */
-#line 1632 "minic.y"
+#line 1631 "minic.y"
     {
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(empty->name,(yyvsp[(1) - (1)].identifier));
@@ -3917,7 +3916,7 @@ yyreduce:
   case 124:
 
 /* Line 1806 of yacc.c  */
-#line 1642 "minic.y"
+#line 1641 "minic.y"
     {
 			    (yyval.statement) = minic_create_break_statement((yyvsp[(2) - (3)].identifier));
                             TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3937,7 +3936,7 @@ yyreduce:
   case 125:
 
 /* Line 1806 of yacc.c  */
-#line 1658 "minic.y"
+#line 1657 "minic.y"
     {
 			    (yyval.statement) = minic_create_continue_statement((yyvsp[(2) - (3)].identifier));
                             TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3957,7 +3956,7 @@ yyreduce:
   case 126:
 
 /* Line 1806 of yacc.c  */
-#line 1674 "minic.y"
+#line 1673 "minic.y"
     {
 			    (yyval.statement) = minic_create_declaration_statement((yyvsp[(1) - (3)].type_specifier),(yyvsp[(2) - (3)].identifier),NULL);
                             TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -3977,7 +3976,7 @@ yyreduce:
   case 127:
 
 /* Line 1806 of yacc.c  */
-#line 1689 "minic.y"
+#line 1688 "minic.y"
     {
 			    (yyval.statement) = minic_create_declaration_statement((yyvsp[(1) - (5)].type_specifier),(yyvsp[(2) - (5)].identifier),(yyvsp[(4) - (5)].expression));
                             TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
@@ -4002,7 +4001,7 @@ yyreduce:
   case 128:
 
 /* Line 1806 of yacc.c  */
-#line 1710 "minic.y"
+#line 1709 "minic.y"
     {
 			    (yyval.block) = minic_open_block();
 			}
@@ -4011,7 +4010,7 @@ yyreduce:
   case 129:
 
 /* Line 1806 of yacc.c  */
-#line 1714 "minic.y"
+#line 1713 "minic.y"
     {
 			    (yyval.block) = minic_close_block((yyvsp[(2) - (4)].block),(yyvsp[(3) - (4)].statement_list));
 			    TreeNode *rc = (TreeNode*)malloc(sizeof(TreeNode));
@@ -4031,7 +4030,7 @@ yyreduce:
   case 130:
 
 /* Line 1806 of yacc.c  */
-#line 1729 "minic.y"
+#line 1728 "minic.y"
     {
 			    Block *empty_block = minic_open_block();
 			    (yyval.block) = minic_close_block(empty_block,NULL);
@@ -4050,7 +4049,7 @@ yyreduce:
   case 131:
 
 /* Line 1806 of yacc.c  */
-#line 1744 "minic.y"
+#line 1743 "minic.y"
     {
 		 	    minic_start_class_definition((yyvsp[(2) - (5)].identifier));
 			    minic_class_define((yyvsp[(4) - (5)].member_declaration));
@@ -4079,7 +4078,7 @@ yyreduce:
   case 132:
 
 /* Line 1806 of yacc.c  */
-#line 1838 "minic.y"
+#line 1837 "minic.y"
     {
 			    TreeNode *md = nodes[--node_idx];
 			    TreeNode *mdl = malloc(sizeof(TreeNode));
@@ -4092,7 +4091,7 @@ yyreduce:
   case 133:
 
 /* Line 1806 of yacc.c  */
-#line 1846 "minic.y"
+#line 1845 "minic.y"
     {
 			    (yyval.member_declaration) = minic_chain_member_declaration((yyvsp[(1) - (2)].member_declaration),(yyvsp[(2) - (2)].member_declaration));
 			    TreeNode *md = nodes[--node_idx];
@@ -4108,7 +4107,7 @@ yyreduce:
   case 134:
 
 /* Line 1806 of yacc.c  */
-#line 1858 "minic.y"
+#line 1857 "minic.y"
     {
 			    (yyval.member_declaration) = minic_create_field_member((yyvsp[(1) - (3)].type_specifier),(yyvsp[(2) - (3)].identifier));
 			    TreeNode *semi = malloc(sizeof(TreeNode));
@@ -4128,7 +4127,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 4132 "y.tab.c"
+#line 4131 "y.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4359,6 +4358,6 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 1891 "minic.y"
+#line 1890 "minic.y"
 
 

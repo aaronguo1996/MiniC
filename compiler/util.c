@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "MEM.h"
 #include "minic.h"
 
 static MINIC_Compiler *st_current_compiler;
@@ -15,20 +16,8 @@ void minic_set_current_compiler(MINIC_Compiler *compiler)
     st_current_compiler = compiler;
 }
 
-void *
-minic_alloc(size_t size)
-{
-    void *p;
-    MINIC_Compiler *compiler;
-
-    //compiler = minic_get_current_compiler();
-    //p = (void*)alloc(size);//[TODO]
-
-    return p;
-}
-
 TypeSpecifier *
-minic_alloc_type_specifier(MINIC_BasicType type)
+minic_alloc_type_specifier(MVM_BasicType type)
 {
     TypeSpecifier *ts = malloc(sizeof(TypeSpecifier));
 
@@ -146,19 +135,19 @@ minic_vstr_append_string(VString *v, char *str)
 */
 
 char *
-minic_get_basic_type_name(MINIC_BasicType type)
+minic_get_basic_type_name(MVM_BasicType type)
 {
     switch (type){
-    case MINIC_BOOLEAN_TYPE:
+    case MVM_BOOLEAN_TYPE:
 	return "boolean";
 	break;
-    case MINIC_INTEGER_TYPE:
+    case MVM_INTEGER_TYPE:
 	return "integer";
 	break;
-    case MINIC_DECIMAL_TYPE:
+    case MVM_DECIMAL_TYPE:
 	return "decimal";
 	break;
-    case MINIC_STRING_TYPE:
+    case MVM_STRING_TYPE:
 	return "string";
 	break;
     default:
@@ -171,10 +160,7 @@ minic_get_basic_type_name(MINIC_BasicType type)
 char *
 minic_expression_to_string(Expression *expr)
 {
-    char buf[LINE_BUF_SIZE];
     char *wc_buf = (char *)malloc(LINE_BUF_SIZE);
-    int  len;
-    char *new_str;
 
     if(expr->kind == BOOLEAN_EXPRESSION) {
 	if(expr->u.boolean_value){
@@ -192,4 +178,31 @@ minic_expression_to_string(Expression *expr)
 	return NULL;
     }
     return wc_buf;
+}
+
+char *
+minic_package_name_to_string(PackageName *src)
+{
+    int len = 0;
+    PackageName *pos;
+    char *dest;
+
+    if (src == NULL) {
+        return NULL;
+    }
+    for (pos = src; pos; pos = pos->next) {
+        len += strlen(pos->name) + 1;
+    }
+
+
+    dest = (char *)MEM_malloc(len);
+    dest[0] = '\0';
+    for (pos = src; pos; pos = pos->next) {
+        strcat(dest, pos->name);
+        if (pos->next) {
+            strcat(dest, ".");
+        }
+    }
+
+    return dest;
 }

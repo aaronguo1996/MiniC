@@ -18,7 +18,7 @@ int node_idx = 0;
     Elseif		*elseif;
     TypeSpecifier	*type_specifier;
     AssignmentOperator	assignment_operator;
-    MINIC_BasicType	basic_type_specifier;
+    MVM_BasicType	basic_type_specifier;
     ArrayDimension	*array_dimension;
     MemberDeclaration	*member_declaration;
     //ClassDefinition     *class_definition;
@@ -68,7 +68,6 @@ program 		: external_declaration_list
 			    program->child = edcl;
 			    nodes[node_idx++] = program;
 			    tree = program;
-				
 			}
 			;
 external_declaration_list : external_declaration
@@ -119,7 +118,7 @@ external_declaration 	: function_definition
 			;
 basic_type_specifier	: VOID_T
 			{
-                            $$ = MINIC_VOID_TYPE;
+                            $$ = MVM_VOID_TYPE;
                             TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(ts->name,"basic_type_specifier");
                             TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -129,7 +128,7 @@ basic_type_specifier	: VOID_T
 			}
 			| BOOLEAN_T 
 			{ 
-			    $$ = MINIC_BOOLEAN_TYPE;
+			    $$ = MVM_BOOLEAN_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -139,7 +138,7 @@ basic_type_specifier	: VOID_T
 			}
 			| INT_T	    
 			{ 
-			    $$ = MINIC_INTEGER_TYPE;
+			    $$ = MVM_INTEGER_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *in = (TreeNode*)malloc(sizeof(TreeNode));
@@ -149,7 +148,7 @@ basic_type_specifier	: VOID_T
 			}
 			| DECIMAL_T 
 			{ 
-			    $$ = MINIC_DECIMAL_TYPE;
+			    $$ = MVM_DECIMAL_TYPE;
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *dn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -159,7 +158,7 @@ basic_type_specifier	: VOID_T
 			}
 			| STRING_T  
 			{ 
-			    $$ = MINIC_STRING_TYPE;  
+			    $$ = MVM_STRING_TYPE;  
 			    TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(ts->name,"basic_type_specifier");
 			    TreeNode *sn = (TreeNode*)malloc(sizeof(TreeNode));
@@ -991,7 +990,7 @@ primary_no_new_array	: primary_no_new_array LB expression RB
 			}
 			| TRUE_T	
 			{ 
-			    $$ = minic_create_boolean_expression(MINIC_TRUE);
+			    $$ = minic_create_boolean_expression(MVM_TRUE);
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(id->name,"true");
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1001,7 +1000,7 @@ primary_no_new_array	: primary_no_new_array LB expression RB
 			}
 			| FALSE_T	
 			{ 
-			    $$ = minic_create_boolean_expression(MINIC_FALSE);
+			    $$ = minic_create_boolean_expression(MVM_FALSE);
                             TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
                             strcpy(id->name,"false");
                             TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));

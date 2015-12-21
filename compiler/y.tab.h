@@ -176,7 +176,7 @@ typedef union YYSTYPE
     Elseif		*elseif;
     TypeSpecifier	*type_specifier;
     AssignmentOperator	assignment_operator;
-    MINIC_BasicType	basic_type_specifier;
+    MVM_BasicType	basic_type_specifier;
     ArrayDimension	*array_dimension;
     MemberDeclaration	*member_declaration;
     //ClassDefinition     *class_definition;
