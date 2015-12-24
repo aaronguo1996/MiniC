@@ -112,6 +112,7 @@ copy_type_specifier_no_alloc(TypeSpecifier *src, MVM_TypeSpecifier *dest)
     dest->basic_type = src->basic_type;
     if (src->basic_type == MVM_CLASS_TYPE) {
         dest->class_index = src->class_ref.class_index;
+        printf("class\n");
     } else {
         dest->class_index = -1;
     }
@@ -177,6 +178,7 @@ add_global_variable(MINIC_Compiler *compiler, MVM_Executable *exe)
 
     for (dl = compiler->declaration_list, i = 0; dl; dl = dl->next, i++) {
         exe->global_variable[i].name = MEM_strdup(dl->declaration->name);
+        printf("variable %s\n",exe->global_variable[i].name);
         exe->global_variable[i].type
             = copy_type_specifier(dl->declaration->type);
     }
@@ -185,6 +187,7 @@ add_global_variable(MINIC_Compiler *compiler, MVM_Executable *exe)
 static void
 add_field(MemberDeclaration *member, MVM_Field *dest)
 {
+    dest->name = MEM_strdup(member->name);
     dest->type = copy_type_specifier(member->type);
 }
 
@@ -200,8 +203,7 @@ search_class(MINIC_Compiler *compiler, ClassDefinition *src)
     }
 
     return NULL;
-}
-*/
+}*/
 
 static void
 add_class(MVM_Executable *exe, ClassDefinition *cd, MVM_Class *dest)
@@ -287,6 +289,9 @@ fix_labels(OpcodeBuf *ob)
 static int
 get_opcode_type_offset(TypeSpecifier *type)
 {
+	if (type->derive != NULL) {
+        return 2;
+    }
     switch (type->basic_type) {
     case MVM_VOID_TYPE:
         break;
@@ -562,12 +567,15 @@ static void
 generate_identifier_expression(MVM_Executable *exe, Block *block,
                                Expression *expr, OpcodeBuf *ob)
 {
+    printf("%d %s\n",expr->u.identifier.kind,expr->u.identifier.name);
     switch (expr->u.identifier.kind) {
     case VARIABLE_IDENTIFIER:
         generate_identifier(expr->u.identifier.u.declaration, ob,
             expr->line_number);
         break;
     case FUNCTION_IDENTIFIER:
+	    //printf("function name:%s\n", expr->u.identifier.name);
+	    //printf("function index: %d\n", expr->u.identifier.u.function->index);
         generate_code(ob, expr->line_number,
             MVM_PUSH_FUNCTION, expr->u.identifier.u.function->index);
         break;
@@ -658,7 +666,12 @@ generate_function_call_expression(MVM_Executable *exe, Block *block,
 {
     FunctionCallExpression *fce = &expr->u.function_call_expression;
 
-    generate_push_argument(exe, block, fce->argument, ob);
+    ArgumentList *arg_pos;
+
+    for (arg_pos = fce->argument; arg_pos; arg_pos = arg_pos->next) {
+        generate_expression(exe, block, arg_pos->expression, ob);
+    }
+
     generate_expression(exe, block, fce->function, ob);
     generate_code(ob, expr->line_number, MVM_INVOKE);
 }
@@ -668,7 +681,6 @@ generate_member_expression(MVM_Executable *exe, Block *block,
                            Expression *expr, OpcodeBuf *ob)
 {
     MemberDeclaration *member;
-    
     member = expr->u.member_expression.declaration;
     generate_expression(exe, block,
         expr->u.member_expression.expression, ob);
@@ -853,6 +865,7 @@ static void
 generate_expression(MVM_Executable *exe, Block *current_block,
                     Expression *expr, OpcodeBuf *ob)
 {
+    printf("expression kind %d\n",expr->kind);
     switch (expr->kind) {
     case BOOLEAN_EXPRESSION:
         generate_boolean_expression(exe, expr, ob);
@@ -978,6 +991,7 @@ generate_assign_expression(MVM_Executable *exe, Block *block,
                            Expression *expr, OpcodeBuf *ob,
                            MVM_Boolean is_toplevel)
 {
+    printf("assign kind %d\n",expr->u.assign_expression.operator);
     if (expr->u.assign_expression.operator != NORMAL_ASSIGN) {
         generate_expression(exe, block, expr->u.assign_expression.left, ob);
     }
@@ -1035,7 +1049,9 @@ generate_expression_statement(MVM_Executable *exe, Block *block,
                               Expression *expr, OpcodeBuf *ob)
 {
     if (expr->kind == ASSIGN_EXPRESSION) {
+        printf("assign\n");
         generate_assign_expression(exe, block, expr, ob, MVM_TRUE);
+        printf("assign end\n");
     } else if (expr->kind == INCREMENT_EXPRESSION
                || expr->kind == DECREMENT_EXPRESSION) {
         generate_inc_dec_expression(exe, block, expr, expr->kind, ob, MVM_TRUE);
@@ -1108,6 +1124,44 @@ generate_while_statement(MVM_Executable *exe, Block *block,
 }
 
 static void
+generate_for_statement(MVM_Executable *exe, Block *block,
+                       Statement *statement, OpcodeBuf *ob)
+{
+    int loop_label;
+    ForStatement *for_s = &statement->u.for_s;
+
+    if (for_s->init) {
+        generate_expression_statement(exe, block, for_s->init, ob);
+    }
+    loop_label = get_label(ob);
+    set_label(ob, loop_label);
+
+    if (for_s->condition) {
+        generate_expression(exe, block, for_s->condition, ob);
+    }
+
+    for_s->block->parent.statement.break_label = get_label(ob);
+    for_s->block->parent.statement.continue_label = get_label(ob);
+
+    if (for_s->condition) {
+        generate_code(ob, statement->line_number, MVM_JUMP_IF_FALSE,
+            for_s->block->parent.statement.break_label);
+    }
+
+    generate_statement_list(exe, for_s->block,
+        for_s->block->statement_list, ob);
+    set_label(ob, for_s->block->parent.statement.continue_label);
+
+    if (for_s->post) {
+        generate_expression_statement(exe, block, for_s->post, ob);
+    }
+
+    generate_code(ob, statement->line_number,
+        MVM_JUMP, loop_label);
+    set_label(ob, for_s->block->parent.statement.break_label);
+}
+
+static void
 generate_return_statement(MVM_Executable *exe, Block *block,
                           Statement *statement, OpcodeBuf *ob)
 {
@@ -1123,6 +1177,7 @@ generate_statement_list(MVM_Executable *exe, Block *current_block,
     StatementList *pos;
 
     for (pos = statement_list; pos; pos = pos->next) {
+        printf("%d\n",pos->statement->type);
         switch (pos->statement->type) {
         case EXPRESSION_STATEMENT:
             generate_expression_statement(exe, current_block,
@@ -1135,11 +1190,11 @@ generate_statement_list(MVM_Executable *exe, Block *current_block,
             generate_while_statement(exe, current_block, pos->statement, ob);
             break;
         case FOR_STATEMENT:
-            //generate_for_statement(exe, current_block, pos->statement, ob);
+            generate_for_statement(exe, current_block, pos->statement, ob);
             break;
         case DO_WHILE_STATEMENT:
             //generate_do_while_statement(exe, current_block,
-              //                          pos->statement, ob);
+            //                            pos->statement, ob);
             break;
         case FOREACH_STATEMENT:
             break;
@@ -1195,32 +1250,22 @@ add_functions(MINIC_Compiler *compiler, MVM_Executable *exe)
     }
     exe->function_count = func_count;
     exe->function = MEM_malloc(sizeof(MVM_Function) * func_count);
-printf("a\n");
+
     for (fd = compiler->function_list, i = 0; fd; fd = fd->next, i++) {
-printf("b\n");
         copy_function(fd, &exe->function[i]);
-printf("c\n");
         if (fd->block) {
-printf("d\n");
             init_opcode_buf(&ob);
-printf("g\n");
-            generate_statement_list(exe, fd->block, fd->block->statement_list,
-                                    &ob);
-printf("h\n");
+            generate_statement_list(exe, fd->block, fd->block->statement_list, &ob);
             exe->function[i].is_implemented = MVM_TRUE;
             exe->function[i].code_size = ob.size;
             exe->function[i].code = fix_opcode_buf(&ob);
             exe->function[i].line_number_size = ob.line_number_size;
             exe->function[i].line_number = ob.line_number;
             exe->function[i].need_stack_size
-                = calc_need_stack_size(exe->function[i].code,
-                                       exe->function[i].code_size);
-printf("i\n");
+                = calc_need_stack_size(exe->function[i].code, exe->function[i].code_size);
         } else {
-printf("e\n");
             exe->function[i].is_implemented = MVM_FALSE;
         }
-printf("f\n");
     }
 }
 									
@@ -1230,10 +1275,10 @@ add_top_level(MINIC_Compiler *compiler, MVM_Executable *exe)
     OpcodeBuf           ob;
 
     init_opcode_buf(&ob);
-	
+	printf("1\n");
     generate_statement_list(exe, NULL, compiler->statement_list,
                             &ob);
-    
+    printf("2\n");
     exe->code_size = ob.size;
     exe->code = fix_opcode_buf(&ob);
     exe->line_number_size = ob.line_number_size;
@@ -1246,19 +1291,15 @@ minic_generate(MINIC_Compiler *compiler)
 {
     MVM_Executable      *exe;
     exe = alloc_executable();
-printf("a\n");
+
     exe->function_count = compiler->mvm_function_count;
     exe->function = compiler->mvm_function;
     exe->class_count = compiler->mvm_class_count;
     exe->class_definition = compiler->mvm_class;
-printf("b\n");
     add_global_variable(compiler, exe);
-printf("c\n");
     add_classes(compiler, exe);
-printf("d\n");
     add_functions(compiler, exe);
-printf("e\n");
     add_top_level(compiler, exe);
-printf("f\n");	
+	
     return exe;
 }

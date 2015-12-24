@@ -1,0 +1,229 @@
+*constant pool section
+    0 string 
+
+    1 decimal 0.100000
+    2 integer -1
+    3 string  
+    4 string 
+
+*global variable section
+    0 <b>  c
+    1 integer [] array
+    2 integer  i
+*function section
+[    0] print
+void print(string  str)
+*end of print
+[    1] printInteger
+void printInteger(integer  i)
+*end of printInteger
+[    2] quickSort
+integer quickSort(integer [] a, integer  low, integer  high)
+    0 push_static_object      0
+    3 push_field_int      0
+    6 increment 
+    7 push_static_object      0
+   10 pop_field_int      0
+   13 push_static_object      0
+   16 push_field_int      0
+   19 push_function      1
+   22 invoke 
+   23 pop 
+   24 push_string      0
+   27 push_function      0
+   30 invoke 
+   31 pop 
+   32 push_stack_int      1
+   35 push_stack_int      2
+   38 ge_int 
+   39 jump_if_false     48
+   42 push_int_1byte      0
+   44 return 
+   45 jump     48
+   48 push_stack_int      1
+   51 pop_stack_int      5
+   54 push_stack_int      2
+   57 pop_stack_int      6
+   60 push_stack_object      0
+   63 push_stack_int      5
+   66 push_array_int 
+   67 pop_stack_int      7
+   70 push_stack_int      5
+   73 push_stack_int      6
+   76 lt_int 
+   77 jump_if_false    183
+   80 push_stack_int      5
+   83 push_stack_int      6
+   86 lt_int 
+   87 duplicate 
+   88 jump_if_false    103
+   91 push_stack_object      0
+   94 push_stack_int      6
+   97 push_array_int 
+   98 push_stack_int      7
+  101 ge_int 
+  102 logical_and 
+  103 jump_if_false    116
+  106 push_stack_int      6
+  109 decrement 
+  110 pop_stack_int      6
+  113 jump     80
+  116 push_stack_object      0
+  119 push_stack_int      6
+  122 push_array_int 
+  123 push_stack_object      0
+  126 push_stack_int      5
+  129 pop_array_int 
+  130 push_stack_int      5
+  133 push_stack_int      6
+  136 lt_int 
+  137 duplicate 
+  138 jump_if_false    153
+  141 push_stack_object      0
+  144 push_stack_int      5
+  147 push_array_int 
+  148 push_stack_int      7
+  151 le_int 
+  152 logical_and 
+  153 jump_if_false    166
+  156 push_stack_int      5
+  159 increment 
+  160 pop_stack_int      5
+  163 jump    130
+  166 push_stack_object      0
+  169 push_stack_int      5
+  172 push_array_int 
+  173 push_stack_object      0
+  176 push_stack_int      6
+  179 pop_array_int 
+  180 jump     70
+  183 push_stack_int      7
+  186 push_stack_object      0
+  189 push_stack_int      5
+  192 pop_array_int 
+  193 push_stack_object      0
+  196 push_stack_int      1
+  199 push_stack_int      5
+  202 push_int_1byte      1
+  204 sub_int 
+  205 push_function      3
+  208 invoke 
+  209 pop 
+  210 push_stack_object      0
+  213 push_stack_int      5
+  216 push_int_1byte      1
+  218 add_int 
+  219 push_stack_int      2
+  222 push_function      3
+  225 invoke 
+  226 pop 
+  227 push_int_1byte      0
+  229 return 
+*line number
+   15 from     0 size    13
+   16 from    13 size    11
+   17 from    24 size     8
+   18 from    32 size     7
+   22 from    39 size     3
+   56 from    42 size     2
+   20 from    44 size     1
+   22 from    45 size     9
+   23 from    54 size     6
+   24 from    60 size    10
+   26 from    70 size     7
+   39 from    77 size     3
+   28 from    80 size    23
+   31 from   103 size     3
+   30 from   106 size     7
+   31 from   113 size     3
+   32 from   116 size    14
+   33 from   130 size    23
+   36 from   153 size     3
+   35 from   156 size     7
+   36 from   163 size     3
+   38 from   166 size    14
+   39 from   180 size     3
+   40 from   183 size    10
+   41 from   193 size    17
+   42 from   210 size    17
+   43 from   227 size     3
+*end of quickSort
+*type section
+*Top Level
+    0 push_double      1
+    3 push_static_object      0
+    6 pop_field_double      1
+    9 push_int      2
+   12 push_int_1byte      2
+   14 push_int_1byte     32
+   16 push_int_1byte     23
+   18 push_int_1byte      5
+   20 push_int_2byte   2490
+   23 push_int_2byte   4859
+   26 push_int_1byte     24
+   28 push_int_2byte    545
+   31 push_int_1byte      3
+   33 push_int_1byte      4
+   35 push_int_1byte      6
+   37 push_int_1byte      8
+   39 push_int_2byte    423
+   42 push_int_1byte     67
+   44 push_int_2byte    345
+   47 push_int_2byte    543
+   50 push_int_1byte    233
+   52 push_int_1byte     17
+   54 push_int_1byte     18
+   56 push_int_1byte     39
+   58 push_int_1byte     21
+   60 push_int_1byte     66
+   62 push_int_1byte      9
+   64 push_int_1byte      0
+   66 push_int_1byte     49
+   68 push_int_1byte     53
+   70 push_int_1byte     77
+   72 push_int_1byte     14
+   74 push_int_1byte     20
+   76 new_array_literal_int     30
+   79 pop_static_object      1
+   82 push_static_object      1
+   85 push_int_1byte      0
+   87 push_int_1byte     29
+   89 push_function      3
+   92 invoke 
+   93 pop 
+   94 push_int_1byte      0
+   96 pop_static_int      2
+   99 push_static_int      2
+  102 push_int_1byte     30
+  104 lt_int 
+  105 jump_if_false    138
+  108 push_string      3
+  111 push_function      0
+  114 invoke 
+  115 pop 
+  116 push_static_object      1
+  119 push_static_int      2
+  122 push_array_int 
+  123 push_function      1
+  126 invoke 
+  127 pop 
+  128 push_static_int      2
+  131 increment 
+  132 pop_static_int      2
+  135 jump     99
+  138 push_string      4
+  141 push_function      0
+  144 invoke 
+  145 pop 
+*line number
+   11 from     0 size     9
+   46 from     9 size    73
+   47 from    82 size    12
+   49 from    94 size     5
+   50 from    99 size     6
+   55 from   105 size     3
+   52 from   108 size     8
+   54 from   116 size    12
+   50 from   128 size     7
+   55 from   135 size     3
+   56 from   138 size     8

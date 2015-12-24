@@ -46,8 +46,8 @@ minic_search_function(char *name)
     compiler = minic_get_current_compiler();
 
     for(pos = compiler->function_list; pos ; pos = pos->next){
-	if(!strcmp(pos->name,name))
-	    break;
+    	if(!strcmp(pos->name,name))
+    	    break;
     }
     return pos;
 }

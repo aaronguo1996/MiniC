@@ -1,0 +1,10 @@
+void print(string str);
+void printDecimal(decimal i);
+
+integer a(integer b)
+{
+    return b+1;
+}
+print("oops\n");
+printDecimal(1.1);
+a(1);

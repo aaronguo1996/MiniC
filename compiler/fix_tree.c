@@ -3,35 +3,45 @@
 #include "minic.h"
 #include "node.h"
 
-/*
-static ClassDefinition *
-search_class_and_add(int line_number, char *name, int *class_index_p);
-*/
+static int
+reserve_function_index(MINIC_Compiler *compiler, FunctionDefinition *src)
+{
+    int i;
+    MVM_Function *dst;
+
+    for(i=0;i<compiler->mvm_function_count;i++){
+        if(!strcmp(src->name,compiler->mvm_function[i].name)){
+            return i;
+        }
+    }
+    //the function haven't been added, first expand the space to store the new one
+    compiler->mvm_function = realloc(compiler->mvm_function,sizeof(MVM_Function)*(compiler->mvm_function_count+1));
+    dst = &compiler->mvm_function[compiler->mvm_function_count];
+    compiler->mvm_function_count++;
+    dst->name = src->name;
+    //printf("%s,%d\n",src->name,compiler->mvm_function_count);
+    return compiler->mvm_function_count-1;
+}
 
 static int
 add_class(ClassDefinition *src)
 {
-    //int i;
-    //DVM_Class *dest;
-    //char *src_package_name;
     MINIC_Compiler *compiler = minic_get_current_compiler();
-    //ExtendsList *sup_pos;
+    MVM_Class *dest;
     int ret;
-    ClassDefinition *pos;
-    for(pos= compiler->class_definition_list;pos->next;pos=pos->next){
-	if(!strcmp(pos->name,src->name) || minic_search_declaration(pos->name,compiler->current_block)){
-	     printf("FROM ADD_CLASS\nLine[%d]: %s\n",
-		    compiler->current_line_number,
-		    "class redefined error.");
-	}
+    int i;
+
+    for(i=0;i<compiler->mvm_class_count;i++){
+        if(!strcmp(src->name,compiler->mvm_class[i].name)){
+            return i;
+        }
     }
+    compiler->mvm_class = realloc(compiler->mvm_class,sizeof(MVM_Class)*(compiler->mvm_class_count+1));
+    dest = &compiler->mvm_class[compiler->mvm_class_count];
     ret = compiler->mvm_class_count;
     compiler->mvm_class_count++;
-    /*for(sup_pos=src->extends;sup_pos;sup_pos=sup_pos->next){
-	int dummy;
-	search_class_and_add(src->line_number, sup_pos->identifier, &dummy);
-    }*/
-
+    dest->name = src->name;
+    
     return ret;
 }
 
@@ -73,20 +83,6 @@ fix_type_specifier(TypeSpecifier *type)
 		    "cannot find type name",type->class_ref.identifier);
     }
 }
-/*
-static TypeSpecifier *
-create_function_derive_type(FunctionDefinition *fd)
-{
-    TypeSpecifier *ret;
-    ret = minic_alloc_type_specifier(fd->type->basic_type);
-    *ret = *fd->type;
-    ret->derive = minic_alloc_type_derive(FUNCTION_DERIVE);
-    //ret->derive->u.function_d.parameter = fd->parameter_list;
-    ret->derive->next = fd->type->derive;
-
-    return ret;
-}
-*/
 
 static Expression *
 fix_identifier_expression(Block *current_block, Expression *expr,
@@ -94,27 +90,27 @@ fix_identifier_expression(Block *current_block, Expression *expr,
 {
     Declaration *decl;
     FunctionDefinition *fd;
+    MINIC_Compiler *compiler = minic_get_current_compiler();
 
     decl = minic_search_declaration(expr->u.identifier.name, current_block);
     if(decl) {
-	expr->type = decl->type;
-	expr->u.identifier.kind = VARIABLE_IDENTIFIER;
-	expr->u.identifier.u.declaration = decl;
-	return expr;
+    	expr->type = decl->type;
+    	expr->u.identifier.kind = VARIABLE_IDENTIFIER;
+    	expr->u.identifier.u.declaration = decl;
+    	return expr;
     }
     fd = minic_search_function(expr->u.identifier.name);
     if (fd == NULL) {
-	printf("FROM FIX_IDENFITIER_EXPRESSION\nLine [%d]: %s %s\n",
-		expr->line_number,
-		"cannot find identifier",
-		expr->u.identifier.name);
-	exit(-1);
+    	printf("FROM FIX_IDENFITIER_EXPRESSION\nLine [%d]: %s %s\n",
+    		expr->line_number,
+    		"cannot find identifier",
+    		expr->u.identifier.name);
+    	exit(-1);
     }
     expr->type = fd->type;
     expr->u.identifier.kind = FUNCTION_IDENTIFIER;
- //   expr->u.identifier.u.function->function_definition = fd;
- //   expr->u.identifier.u.function->function_index = compiler->function_count-1;
-//reserve_function_index(compiler,fd);
+    expr->u.identifier.u.function = fd;
+    expr->u.identifier.u.function->index = reserve_function_index(compiler,fd);
     fix_type_specifier(expr->type);
 
     return expr;
@@ -251,7 +247,6 @@ chain_string(Expression *expr)
 static Expression *
 eval_math_expression(Block *current_block, Expression *expr)
 {
-    printf("left:%d\nright:%d\n",expr->u.binary_expression.left->kind,expr->u.binary_expression.right->kind);
     if(expr->u.binary_expression.left->kind == INTEGER_EXPRESSION
 	&& expr->u.binary_expression.right->kind == INTEGER_EXPRESSION){
 	expr = eval_math_expression_int(expr,
@@ -624,7 +619,6 @@ search_class_and_add(int line_number, char *name, int *class_index_p)
 static Expression *
 fix_function_call_expression(Block *current_block, Expression *expr)
 {
-    printf("this is function\n");
     Expression *func_expr;
     FunctionDefinition *fd;
 
@@ -770,28 +764,37 @@ fix_array_creation_expression(Block *current_block, Expression *expr)
 }
 
 static Expression *
+fix_class_member_expression(Expression *expr,
+                            Expression *obj, char *member_name)
+{
+    MemberDeclaration *member;
+
+    fix_type_specifier(obj->type);
+    member = minic_search_member(obj->type->class_ref.class_definition,
+                               member_name);
+    if (member == NULL) {
+        printf("FROM FIX_CLASS_MEMBER_EXPRESSION\nLine[%d]: cannot find member %s\n",
+            expr->line_number,member_name);
+    }
+    
+    expr->u.member_expression.declaration = member;
+    expr->type = member->type;
+
+    return expr;
+}
+
+
+
+static Expression *
 fix_member_expression(Block *current_block, Expression *expr)
 {
-    ClassDefinition *cd;
-    
-    Expression *exp = fix_expression(current_block,expr->u.member_expression.expression,expr);
-    cd = minic_search_class(expr->u.member_expression.expression->type->class_ref.identifier);
-    if(cd == NULL){
-	printf("FROM FIX_MEMBER_EXPRESSION\nLine[%d]: %s %s\n",
-		expr->line_number, "cannot find class",exp->type->class_ref.identifier );
-	exit(-1);
-    }
-
-    MemberDeclaration *member = minic_search_member(cd, expr->u.member_expression.member_name);
-    if(member == NULL){
-	 printf("FROM FIX_MEMBER_EXPRESSION\nLine[%d]: %s %s in class %s\n",
-		expr->line_number, "cannot find member",
-		expr->u.member_expression.member_name,
-		exp->type->class_ref.identifier);
-	exit(-1);
-    }
-    expr->type = member->type;
-    return expr;
+    Expression *obj;
+    obj = expr->u.member_expression.expression
+        = fix_expression(current_block, expr->u.member_expression.expression,
+                         expr);
+    return fix_class_member_expression(expr, obj,
+                                       expr->u.member_expression
+                                       .member_name);
 }
 
 static Expression *
@@ -949,8 +952,8 @@ fix_return_statement(Block *current_block, ReturnStatement *return_s,
                 return_value->u.string_value = "";
                 break;
             case MVM_NULL_TYPE: /* FALLTHRU */
-                return_value = minic_alloc_expression(NULL_EXPRESSION);
-                printf("oops4\n");
+                //return_value = minic_alloc_expression(NULL_EXPRESSION);
+                //break;
             default:
                 break;
             }
@@ -1008,7 +1011,6 @@ static void
 fix_statement(Block *current_block, Statement *statement,
               FunctionDefinition *fd)
 {
-    printf("%d\n",statement->type);
     switch (statement->type) {
     case EXPRESSION_STATEMENT:
         fix_expression(current_block, statement->u.expression_s, NULL);
@@ -1049,7 +1051,6 @@ fix_statement(Block *current_block, Statement *statement,
 			   fd);
         break;
     case RETURN_STATEMENT:
-    printf("Oops\n");
         fix_return_statement(current_block,
                              &statement->u.return_s, fd);
         break;
@@ -1130,12 +1131,43 @@ add_return_function(FunctionDefinition *fd)
     *last_p = minic_create_statement_list(ret);
 }
 
+static void fix_class_list(MINIC_Compiler *compiler)
+{
+    ClassDefinition *class_pos;
+    MemberDeclaration *member_pos;
+    int field_index = 0;
+
+    for(class_pos = compiler->class_definition_list;
+        class_pos; class_pos = class_pos->next){
+        add_class(class_pos);
+    }
+
+    for(class_pos = compiler->class_definition_list;
+        class_pos;class_pos = class_pos->next){
+        compiler->current_class_definition = class_pos;
+        for(member_pos = class_pos->member;member_pos;
+            member_pos = member_pos->next){
+            fix_type_specifier(member_pos->type);
+            member_pos->index = field_index;
+            field_index++;
+        }
+        compiler->current_class_definition = NULL;
+    }
+}
+
 void
 minic_fix_tree(MINIC_Compiler *compiler)
 {
     FunctionDefinition *func_pos;
     DeclarationList *dl;
     int var_count = 0;
+
+    fix_class_list(compiler);
+
+    for (func_pos = compiler->function_list; func_pos;
+         func_pos = func_pos->next) {
+        func_pos->index = reserve_function_index(compiler,func_pos);
+    }
 
     fix_statement_list(NULL, compiler->statement_list, 0);
 

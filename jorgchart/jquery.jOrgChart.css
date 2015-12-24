@@ -1,0 +1,69 @@
+/* Basic styling */
+body{background:#f2f1eb;}
+p {font-family:"Adobe 黑体 Std R";font-weight:bolder; font-size:3em; color:#69c7c7;  float:left;}
+p.red {color:#a75781;margin-left:0.3em;}
+div.p {width:100%;top:0;left:0;position:fixed;background:#f2f1eb;}
+div.jOrgChart {margin-top:8em;}
+/* Draw the lines */
+.jOrgChart .line {
+  height                : 20px;
+  width                 : 4px;
+}
+
+.jOrgChart .down {
+  background-color 		: #69c7c7;
+  width:3px;
+  /*border-bottom: 2px solid black;*/
+  margin 				: 0 auto;
+}
+
+.jOrgChart .top {
+  border-top          : 3px solid #69c7c7;
+}
+
+.jOrgChart .left {
+  border-right          : 3px solid #69c7c7;
+}
+
+.jOrgChart .right {
+  border-left           : 3px solid #69c7c7;
+}
+
+/* node cell */
+.jOrgChart td {
+  text-align            : center;
+  vertical-align       :top;
+  padding               : 0;
+}
+
+/* The node */
+.jOrgChart .node {
+  background-color: #a75781;
+  border-radius:10px;
+  border:1px solid #a75781;
+  display: inline-block;
+  padding-top: 0.9em;
+  padding-left: 0.5em;
+  padding-right:0.5em;
+  min-width:50px;
+  min-height:50px;
+  z-index: 10;
+  margin:0 2px;
+}
+
+.jOrgChart a {
+  cursor: default;
+  color: #ffffff;
+  font-family:"Comic Sans MS";
+}
+
+/* jQuery drag 'n drop */
+
+.drag-active {
+  border-style			: dotted !important;
+}
+
+.drop-hover {
+  border-style			: solid !important;
+  border-color 			: #E05E00 !important;
+}

@@ -179,7 +179,7 @@ typedef union YYSTYPE
     MVM_BasicType	basic_type_specifier;
     ArrayDimension	*array_dimension;
     MemberDeclaration	*member_declaration;
-    //ClassDefinition     *class_definition;
+    ClassDefinition     *class_definition;
 
 
 

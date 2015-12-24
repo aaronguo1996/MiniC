@@ -38,7 +38,7 @@ create.o: create.c ../include/MEM.h minic.h \
   ../include/MVM_code.h ../include/MVM.h
 minic.tab.o: minic.tab.c minic.h ../include/MEM.h \
   ../include/MVM_code.h ../include/MVM.h \
-  ../include/share.h
+  ../include/share.h ../include/node.h
 error.o: error.c ../include/MEM.h minic.h \
   ../include/MVM_code.h ../include/MVM.h \
   ../include/share.h

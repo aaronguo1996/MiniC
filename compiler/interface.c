@@ -9,9 +9,6 @@ MINIC_create_compiler(void)
 	//MEM_Storage storage;
 	MINIC_Compiler *compiler;
 
-	//storage = MEM_open_storage(0);
-	//compiler = MEM_storage_malloc(storage,
-	//			      sizeof(struct MINIC_Compiler_tag));
 	compiler = (MINIC_Compiler *)malloc(sizeof(struct MINIC_Compiler_tag));
 	compiler->function_list = NULL;
 	compiler->mvm_function_count = 0;
@@ -49,19 +46,14 @@ do_compile(MINIC_Compiler *compiler, FILE *fp)
 		fprintf(stderr,"Error!\n");
 		exit(1);
 	}
-	printf("ab\n");
 }
 
 MVM_Executable *MINIC_compile(MINIC_Compiler *compiler, FILE *fp)
 {
-	//MVM_ExecutableList *list;
-    //MVM_Executable *exe;
 	do_compile(compiler, fp);
-	printf("Abc\n");
 	minic_fix_tree(compiler);
-	printf("def\n");
+	printf("haha\n");
 	MVM_Executable *exe = minic_generate(compiler);
-	printf("hahah\n");
 	return exe;
 }
 

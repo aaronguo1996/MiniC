@@ -1,6 +1,6 @@
 void print(string str);
 
-integer a := 0;
-decimal b := 3.3;
-integer c := a;
-integer d := a+c;
+integer c := 19;
+string str := "abc";
+decimal d := 3.14;
+integer[] array := { 1, 2, 3 };

@@ -254,7 +254,7 @@ typedef struct {
     char *class_name;
     ClassDefinition *class_definition;
     int class_index;
-    ArgumentList *argumnet;
+    ArgumentList *argument;
 } NewExpression;
 
 typedef struct ArrayDimension_tag{
@@ -562,7 +562,8 @@ char *minic_package_name_to_string(PackageName *src);
 
 /* disassemble.c */
 int mvm_dump_instruction(FILE *fp, MVM_Byte *code, int index);
-void mvm_disassemble(MVM_Executable *exe);
+//void mvm_disassemble(MVM_Executable *exe);
+//void mvm_disassemble_to_file(MVM_Executable *exe, FILE *fp_disassemble);
 
 /* main.c */
 int display_program();

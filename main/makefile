@@ -4,6 +4,7 @@ OBJS = \
   ../compiler/compiler.o\
   ../share/share.o\
   ../memory/mem.o\
+  ../mvm/mvm.o\
   ./main.o
   
 CFLAGS = -c -g -Wall -Wswitch-enum -DDEBUG -DDKM_WINDOWS
@@ -16,10 +17,11 @@ $(TARGET):$(OBJS)
 	cd ../compiler; $(MAKE)
 	cd ../share; $(MAKE);
 	cd ../memory; $(MAKE);
+	cd ../mvm; $(MAKE);
 	$(CC) $(OBJS) -o $@ -lm
 
 clean:
-	rm -f *.o *~
+	rm lex back.php disassemble -f *.o *~
 .c.o:
 	$(CC) $(CFLAGS) $*.c $(INCLUDES)
 ../memory/mem.o:
@@ -28,6 +30,8 @@ clean:
 	cd ../share; $(MAKE);
 ../compiler/compiler.o:
 	cd ../compiler; $(MAKE);
+../mvm/mvm.o:
+	cd ../mvm; $(MAKE);
 ###########################################################
 main.o: main.c ../include/MC.h ../include/MVM_code.h ../include/MVM.h \
-   ../include/MEM.h
+   ../include/MEM.h ../include/node.h

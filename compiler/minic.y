@@ -21,7 +21,7 @@ int node_idx = 0;
     MVM_BasicType	basic_type_specifier;
     ArrayDimension	*array_dimension;
     MemberDeclaration	*member_declaration;
-    //ClassDefinition     *class_definition;
+    ClassDefinition     *class_definition;
 }
 %token <expression>	INT_LITERAL
 %token <expression>	DECIMAL_LITERAL
@@ -51,13 +51,13 @@ int node_idx = 0;
 %type <block>		block
 %type <elseif>		elseif elseif_list
 %type <assignment_operator>	assignment_operator
-%type <identifier>	identifier_opt label_opt
+%type <identifier>	identifier_opt
 %type <type_specifier>	type_specifier class_type_specifier array_type_specifier
 %type <basic_type_specifier>	basic_type_specifier
 %type <array_dimension>	dimension_expression	dimension_expression_list
                         dimension_list
 %type <member_declaration> member_declaration member_declaration_list
-//%type <class_definition>  class_definition
+%type <class_definition>  class_definition
 %%
 
 program 		: external_declaration_list 
@@ -65,6 +65,8 @@ program 		: external_declaration_list
 			    TreeNode *program = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(program->name,"program");
 			    TreeNode *edcl = nodes[--node_idx];
+			    edcl->child = NULL;
+			    edcl->sibling = NULL;
 			    program->child = edcl;
 			    nodes[node_idx++] = program;
 			    tree = program;
@@ -99,11 +101,11 @@ external_declaration 	: function_definition
 			}
 			| class_definition
 			{
-                            TreeNode *fd = nodes[--node_idx];
-                            TreeNode *edcl = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(edcl->name,"external_declaration");
-                            edcl->child = fd;
-                            nodes[node_idx++] = edcl;
+                TreeNode *fd = nodes[--node_idx];
+                TreeNode *edcl = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(edcl->name,"external_declaration");
+                edcl->child = fd;
+                nodes[node_idx++] = edcl;
 			}
 			| statement
 			{
@@ -118,13 +120,13 @@ external_declaration 	: function_definition
 			;
 basic_type_specifier	: VOID_T
 			{
-                            $$ = MVM_VOID_TYPE;
-                            TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ts->name,"basic_type_specifier");
-                            TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(bn->name,"void");
-                            ts->child = bn;
-                            nodes[node_idx++] = ts;
+                $$ = MVM_VOID_TYPE;
+                TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ts->name,"basic_type_specifier");
+                TreeNode *bn = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(bn->name,"void");
+                ts->child = bn;
+                nodes[node_idx++] = ts;
 			}
 			| BOOLEAN_T 
 			{ 
@@ -248,11 +250,11 @@ type_specifier		:basic_type_specifier
 			}
 			| class_type_specifier
 			{
-                            TreeNode *tspc = nodes[--node_idx];
-                            TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ts->name,"type_specifier");
-                            ts->child = tspc;
-                            nodes[node_idx++] = ts;
+                TreeNode *tspc = nodes[--node_idx];
+                TreeNode *ts = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ts->name,"type_specifier");
+                ts->child = tspc;
+                nodes[node_idx++] = ts;
 			}
 			;
 function_definition	: type_specifier IDENTIFIER LP parameter_list RP block
@@ -282,65 +284,65 @@ function_definition	: type_specifier IDENTIFIER LP parameter_list RP block
 			{
 			    minic_function_define($1,$2,NULL,$5);
 			    TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rpNode->name,")");
-                            rpNode->sibling = bnode;
-                            TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lpNode->name,"(");
-                            lpNode->sibling = rpNode;
-                            TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(idnode->name,$2);
-                            idnode->sibling = lpNode;
-                            TreeNode *tsnode = nodes[--node_idx];
-                            tsnode->sibling = idnode;
-                            TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(fdnode->name,"function_definition");
-                            fdnode->child = tsnode;
-                            nodes[node_idx++] = fdnode;
+                TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rpNode->name,")");
+                rpNode->sibling = bnode;
+                TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lpNode->name,"(");
+                lpNode->sibling = rpNode;
+                TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(idnode->name,$2);
+                idnode->sibling = lpNode;
+                TreeNode *tsnode = nodes[--node_idx];
+                tsnode->sibling = idnode;
+                TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(fdnode->name,"function_definition");
+                fdnode->child = tsnode;
+                nodes[node_idx++] = fdnode;
 			}
 			| type_specifier IDENTIFIER LP parameter_list RP SEMICOLON
 			{
 			    minic_function_define($1,$2,$4,NULL);
 			    TreeNode *semnode = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(semnode->name,";");
-                            TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rpNode->name,")");
-                            rpNode->sibling = semnode;
-                            TreeNode *plnode = nodes[--node_idx];
-                            plnode->sibling = rpNode;
-                            TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lpNode->name,"(");
-                            lpNode->sibling = plnode;
-                            TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(idnode->name,$2);
-                            idnode->sibling = lpNode;
-                            TreeNode *tsnode = nodes[--node_idx];
-                            tsnode->sibling = idnode;
-                            TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(fdnode->name,"function_definition");
-                            fdnode->child = tsnode;
-                            nodes[node_idx++] = fdnode;
+                TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rpNode->name,")");
+                rpNode->sibling = semnode;
+                TreeNode *plnode = nodes[--node_idx];
+                plnode->sibling = rpNode;
+                TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lpNode->name,"(");
+                lpNode->sibling = plnode;
+                TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(idnode->name,$2);
+                idnode->sibling = lpNode;
+                TreeNode *tsnode = nodes[--node_idx];
+                tsnode->sibling = idnode;
+                TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(fdnode->name,"function_definition");
+                fdnode->child = tsnode;
+                nodes[node_idx++] = fdnode;
 			}
 			| type_specifier IDENTIFIER LP RP SEMICOLON
 			{
 			    minic_function_define($1,$2,NULL,NULL);
 			    TreeNode *semnode = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(semnode->name,";");
-                            TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rpNode->name,")");
-                            rpNode->sibling = semnode;
-                            TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lpNode->name,"(");
-                            lpNode->sibling = rpNode;
-                            TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(idnode->name,$2);
-                            idnode->sibling = lpNode;
-                            TreeNode *tsnode = nodes[--node_idx];
-                            tsnode->sibling = idnode;
-                            TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(fdnode->name,"function_definition");
-                            fdnode->child = tsnode;
-                            nodes[node_idx++] = fdnode;
+                TreeNode *rpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rpNode->name,")");
+                rpNode->sibling = semnode;
+                TreeNode *lpNode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lpNode->name,"(");
+                lpNode->sibling = rpNode;
+                TreeNode *idnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(idnode->name,$2);
+                idnode->sibling = lpNode;
+                TreeNode *tsnode = nodes[--node_idx];
+                tsnode->sibling = idnode;
+                TreeNode *fdnode = (TreeNode*)malloc(sizeof(TreeNode));
+    			strcpy(fdnode->name,"function_definition");
+                fdnode->child = tsnode;
+                nodes[node_idx++] = fdnode;
 			}
 			;
 parameter_list		: type_specifier IDENTIFIER
@@ -352,7 +354,7 @@ parameter_list		: type_specifier IDENTIFIER
 			    tsnode->sibling = idnode;
 			    TreeNode *plnode = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(plnode->name,"parameter_list");
-			    plnode->child = plnode;
+			    plnode->child = tsnode;
 			    nodes[node_idx++] = plnode;
 			}
 			| parameter_list COMMA type_specifier IDENTIFIER
@@ -1162,29 +1164,29 @@ dimension_list		: LB RB
 			{
 			    $$ = minic_create_array_dimension(NULL);
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rb->name,"]");
-                            TreeNode *lb = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lb->name,"[");
-                            TreeNode *dimexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(dimexp->name,"dimension_list");
-                            lb->sibling = rb;
-                            dimexp->child = lb;
-                            nodes[node_idx++] = dimexp;
+                strcpy(rb->name,"]");
+                TreeNode *lb = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lb->name,"[");
+                TreeNode *dimexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(dimexp->name,"dimension_list");
+                lb->sibling = rb;
+                dimexp->child = lb;
+                nodes[node_idx++] = dimexp;
 			}
 			| dimension_list LB RB
 			{
 			    $$ = minic_chain_array_dimension($1,minic_create_array_dimension(NULL));
 			    TreeNode *rb = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rb->name,"]");
-                            TreeNode *lb = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lb->name,"[");
-			    TreeNode *dl = nodes[--node_idx];
-                            TreeNode *dimexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(dimexp->name,"dimension_list");
-                            lb->sibling = rb;
-                            dl->sibling = lb;
-                            dimexp->child = dl;
-                            nodes[node_idx++] = dimexp;
+                strcpy(rb->name,"]");
+                TreeNode *lb = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lb->name,"[");
+    			TreeNode *dl = nodes[--node_idx];
+                TreeNode *dimexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(dimexp->name,"dimension_list");
+                lb->sibling = rb;
+                dl->sibling = lb;
+                dimexp->child = dl;
+                nodes[node_idx++] = dimexp;
 			}
 			;
 expression_list		: /* empty */
@@ -1210,15 +1212,15 @@ expression_list		: /* empty */
 			{
 			    $$ = minic_chain_expression_list($1,$3);
 			    TreeNode *ae = nodes[--node_idx];
-                            TreeNode *comma = (TreeNode*)malloc(sizeof(TreeNode));
+                TreeNode *comma = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(comma->name,",");
 			    TreeNode *explist = nodes[--node_idx];
 			    TreeNode *expl = (TreeNode*)malloc(sizeof(TreeNode));                       
-                            strcpy(expl->name,"expression_list");
+                strcpy(expl->name,"expression_list");
 			    comma->sibling = ae;
 			    explist->sibling = comma;
-                            expl->child = explist;
-                            nodes[node_idx++] = expl;
+                expl->child = explist;
+                nodes[node_idx++] = expl;
 			}
 			;
 statement		: expression SEMICOLON
@@ -1242,90 +1244,89 @@ statement		: expression SEMICOLON
 			    nodes[node_idx++] = statement;
 			}
 			| while_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| do_while_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
-
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| for_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| foreach_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| return_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| break_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| continue_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			| declaration_statement
-                        {
-                            TreeNode *stmt = nodes[--node_idx];
-                            TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(statement->name,"statement");
-                            statement->child = stmt;
-                            nodes[node_idx++] = statement;
-                        }
+            {
+                TreeNode *stmt = nodes[--node_idx];
+                TreeNode *statement = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(statement->name,"statement");
+                statement->child = stmt;
+                nodes[node_idx++] = statement;
+            }
 			;
 if_statement		: IF LP expression RP block
 			{
 			    $$ = minic_create_if_statement($3,$5,NULL,NULL);
 			    TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-			    rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-			    TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(ifnode->name,"IF");
-			    ifnode->sibling = lp;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"if_statement");
-                            pexp->child = ifnode;
-                            nodes[node_idx++] = pexp;
+				TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+				strcpy(rp->name,")");
+				rp->sibling = bnode;
+				TreeNode *exp = nodes[--node_idx];
+				exp->sibling = rp;
+				TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+				strcpy(lp->name,"(");
+				lp->sibling = exp;
+				TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+				strcpy(ifnode->name,"IF");
+				ifnode->sibling = lp;
+				TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+				strcpy(pexp->name,"if_statement");
+				pexp->child = ifnode;
+				nodes[node_idx++] = pexp;
 			}
 			| IF LP expression RP block ELSE block
 			{
@@ -1334,72 +1335,72 @@ if_statement		: IF LP expression RP block
 			    TreeNode *elsenode = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(elsenode->name,"ELSE");
 			    elsenode->sibling = block;
-                            TreeNode *bnode = nodes[--node_idx];
-			    bnode->sibling = elsenode;
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"IF");
-                            ifnode->sibling = lp;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"if_statement");
-                            pexp->child = ifnode;
-                            nodes[node_idx++] = pexp;
+                TreeNode *bnode = nodes[--node_idx];
+    			bnode->sibling = elsenode;
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = exp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"IF");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"if_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			| IF LP expression RP block elseif_list
 			{
 			    $$ = minic_create_if_statement($3,$5,$6,NULL);
-                            TreeNode *elsenode = nodes[--node_idx];
-                            TreeNode *bnode = nodes[--node_idx];
-                            bnode->sibling = elsenode;
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"IF");
-                            ifnode->sibling = lp;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"if_statement");
-                            pexp->child = ifnode;
-                            nodes[node_idx++] = pexp;
+                TreeNode *elsenode = nodes[--node_idx];
+                TreeNode *bnode = nodes[--node_idx];
+                bnode->sibling = elsenode;
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = exp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"IF");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"if_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			| IF LP expression RP block elseif_list ELSE block
 			{
 			    $$ = minic_create_if_statement($3,$5,$6,$8);
-                            TreeNode *block = nodes[--node_idx];
-                            TreeNode *elsenode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(elsenode->name,"ELSE");
-                            elsenode->sibling = block;
+                TreeNode *block = nodes[--node_idx];
+                TreeNode *elsenode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(elsenode->name,"ELSE");
+                elsenode->sibling = block;
 			    TreeNode *elselist = nodes[--node_idx];
 			    elselist->sibling = elsenode;
-                            TreeNode *bnode = nodes[--node_idx];
-                            bnode->sibling = elselist;
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"IF");
-                            ifnode->sibling = lp;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"if_statement");
-                            pexp->child = ifnode;
-                            nodes[node_idx++] = pexp;
+                TreeNode *bnode = nodes[--node_idx];
+                bnode->sibling = elselist;
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = exp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"IF");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"if_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			;
 elseif_list		: elseif
@@ -1425,81 +1426,55 @@ elseif_list		: elseif
 elseif			: ELSEIF LP expression RP block
 			{
 			    $$ = minic_create_elseif($3,$5);
-                            TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"ELSEIF");
-                            ifnode->sibling = lp;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"elseif");
-                            pexp->child = ifnode;
-                            nodes[node_idx++] = pexp;			    
+                TreeNode *bnode = nodes[--node_idx];
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = exp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"ELSEIF");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"elseif");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			;
-label_opt		: /* empty */
+while_statement		: WHILE LP expression RP block
 			{
-			    $$ = NULL;
-			    TreeNode *node = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(node->name,"#");
-			    TreeNode *lnode = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(lnode->name,"label_opt");
-			    lnode->child = node;
-			    nodes[node_idx++] = lnode;
-			}
-			| IDENTIFIER COLON
-			{
-			    $$ = $1;
-			    TreeNode *colon = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(colon->name,";");
-			    TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(id->name,$1);
-			    TreeNode *lnode = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(lnode->name,"label_opt");
-			    id->sibling = colon;
-			    lnode->child = id;
-			    nodes[node_idx++] = lnode;
+			    $$ = minic_create_while_statement(NULL,$3,$5);
+                TreeNode *bnode = nodes[--node_idx];
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = exp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"while");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"while_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			;
-while_statement		: label_opt WHILE LP expression RP block
-			{
-			    $$ = minic_create_while_statement($1,$4,$6);
-                            TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = exp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"while");
-                            ifnode->sibling = lp;
-			    TreeNode *lnode = nodes[--node_idx];
-			    lnode->sibling = ifnode;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"while_statement");
-                            pexp->child = lnode;
-                            nodes[node_idx++] = pexp;
-			}
-			;
-for_statement		: label_opt FOR LP expression_opt SEMICOLON 
+for_statement		: FOR LP expression_opt SEMICOLON 
 			  expression_opt SEMICOLON expression_opt RP block
 			{
-			    $$ = minic_create_for_statement($1,$4,$6,$8,$10);
-                            TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *postexp = nodes[--node_idx];
-                            postexp->sibling = rp;
+			    $$ = minic_create_for_statement(NULL,$3,$5,$7,$9);
+                TreeNode *bnode = nodes[--node_idx];
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *postexp = nodes[--node_idx];
+                postexp->sibling = rp;
 			    TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(semi->name,";");
 			    semi->sibling = postexp;
@@ -1508,25 +1483,23 @@ for_statement		: label_opt FOR LP expression_opt SEMICOLON
 			    TreeNode *semic = (TreeNode*)malloc(sizeof(TreeNode));
 			    strcpy(semic->name,";");
 			    semic->sibling = condexp;
-			    TreeNode *initexp = (TreeNode*)malloc(sizeof(TreeNode));
+			    TreeNode *initexp = nodes[--node_idx];
 			    initexp->sibling = semic;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = initexp;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"for");
-                            ifnode->sibling = lp;
-                            TreeNode *lnode = nodes[--node_idx];
-                            lnode->sibling = ifnode;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"for_statement");
-                            pexp->child = lnode;
-                            nodes[node_idx++] = pexp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = initexp;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"for");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"for_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			;
-do_while_statement	: label_opt DO_T block WHILE LP expression RP SEMICOLON
+do_while_statement	: DO_T block WHILE LP expression RP SEMICOLON
 			{
-			    $$ = minic_create_do_while_statement($1,$3,$6);
+			    $$ = minic_create_do_while_statement(NULL,$2,$5);
 			    TreeNode *semi = malloc(sizeof(TreeNode));
 			    strcpy(semi->name,";");
 			    TreeNode *rp = malloc(sizeof(TreeNode));
@@ -1539,7 +1512,6 @@ do_while_statement	: label_opt DO_T block WHILE LP expression RP SEMICOLON
 			    TreeNode *bnode = nodes[--node_idx];
 			    TreeNode *dnode = malloc(sizeof(TreeNode));
 			    strcpy(dnode->name,"do");
-			    TreeNode *label_opt = nodes[--node_idx];
 			    TreeNode *dwstmt = malloc(sizeof(TreeNode));
 			    strcpy(dwstmt->name,"do_while_statement");
 			    rp->sibling = semi;
@@ -1548,38 +1520,35 @@ do_while_statement	: label_opt DO_T block WHILE LP expression RP SEMICOLON
 			    wnode->sibling = lp;
 			    bnode->sibling = wnode;
 			    dnode->sibling = bnode;
-			    label_opt->sibling = dnode;
-			    dwstmt->child = label_opt;
+			    dwstmt->child = dnode;
 			    nodes[node_idx++] = dwstmt;
 			}
 			;
-foreach_statement	: label_opt FOREACH LP IDENTIFIER COLON expression RP block
+foreach_statement	: FOREACH LP IDENTIFIER COLON expression RP block
 			{
-			    $$ = minic_create_foreach_statement($1,$4,$6,$8);
-                            TreeNode *bnode = nodes[--node_idx];
-                            TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(rp->name,")");
-                            rp->sibling = bnode;
-                            TreeNode *exp = nodes[--node_idx];
-                            exp->sibling = rp;
+			    $$ = minic_create_foreach_statement(NULL,$3,$5,$7);
+                TreeNode *bnode = nodes[--node_idx];
+                TreeNode *rp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(rp->name,")");
+                rp->sibling = bnode;
+                TreeNode *exp = nodes[--node_idx];
+                exp->sibling = rp;
 			    TreeNode *colon = (TreeNode*)malloc(sizeof(TreeNode));
 		  	    strcpy(colon->name,":");
 			    colon->sibling = exp;
 			    TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(id->name,$4);
+			    strcpy(id->name,$3);
 			    id->sibling = colon;
-                            TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(lp->name,"(");
-                            lp->sibling = id;
-                            TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(ifnode->name,"foreach");
-                            ifnode->sibling = lp;
-                            TreeNode *lnode = nodes[--node_idx];
-                            lnode->sibling = ifnode;
-                            TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(pexp->name,"foreach_statement");
-                            pexp->child = lnode;
-                            nodes[node_idx++] = pexp;
+                TreeNode *lp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(lp->name,"(");
+                lp->sibling = id;
+                TreeNode *ifnode = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(ifnode->name,"foreach");
+                ifnode->sibling = lp;
+                TreeNode *pexp = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(pexp->name,"foreach_statement");
+                pexp->child = ifnode;
+                nodes[node_idx++] = pexp;
 			}
 			;
 expression_opt		: /* empty */	
@@ -1594,11 +1563,11 @@ expression_opt		: /* empty */
 			}
 			| expression
 			{
-                            TreeNode *empty = nodes[--node_idx];
-                            TreeNode *eopt = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(eopt->name,"expression_opt");
-                            eopt->child = empty;
-                            nodes[node_idx++] = eopt;			    
+                TreeNode *empty = nodes[--node_idx];
+                TreeNode *eopt = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(eopt->name,"expression_opt");
+                eopt->child = empty;
+                nodes[node_idx++] = eopt;
 			}
 			;
 return_statement	: RETURN_T expression_opt SEMICOLON
@@ -1621,62 +1590,62 @@ identifier_opt		: /* empty */
 			{ 
 			    $$ = NULL;
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(empty->name,"#");
-                            TreeNode *iopt = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(iopt->name,"identifier_opt");
-                            iopt->child = empty;
-                            nodes[node_idx++] = iopt;	
+                strcpy(empty->name,"#");
+                TreeNode *iopt = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(iopt->name,"identifier_opt");
+                iopt->child = empty;
+                nodes[node_idx++] = iopt;
 			}
 			| IDENTIFIER
 			{
 			    TreeNode *empty = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(empty->name,$1);
-                            TreeNode *iopt = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(iopt->name,"identifier_opt");
-                            iopt->child = empty;
-                            nodes[node_idx++] = iopt;
+                strcpy(empty->name,$1);
+                TreeNode *iopt = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(iopt->name,"identifier_opt");
+                iopt->child = empty;
+                nodes[node_idx++] = iopt;
 			}
 			;
 break_statement		: BREAK identifier_opt SEMICOLON
 			{
 			    $$ = minic_create_break_statement($2);
-                            TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(semi->name,";");
-                            TreeNode *id = nodes[--node_idx];
-                            id->sibling = semi;
-                            TreeNode *brea = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(brea->name,"break");
-                            brea->sibling = id;
-                            TreeNode *retstmt = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(retstmt->name,"break_statement");
-                            retstmt->child = brea;
-                            nodes[node_idx++] = retstmt;
+                TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(semi->name,";");
+                TreeNode *id = nodes[--node_idx];
+                id->sibling = semi;
+                TreeNode *brea = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(brea->name,"break");
+                brea->sibling = id;
+                TreeNode *retstmt = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(retstmt->name,"break_statement");
+                retstmt->child = brea;
+                nodes[node_idx++] = retstmt;
 			}
 			;
 continue_statement	: CONTINUE identifier_opt SEMICOLON
 			{
 			    $$ = minic_create_continue_statement($2);
-                            TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(semi->name,";");
-                            TreeNode *id = nodes[--node_idx];
-                            id->sibling = semi;
-                            TreeNode *cont = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(cont->name,"continue");
-                            cont->sibling = id;
-                            TreeNode *retstmt = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(retstmt->name,"continue_statement");
-                            retstmt->child = cont;
-                            nodes[node_idx++] = retstmt;
+                TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(semi->name,";");
+                TreeNode *id = nodes[--node_idx];
+                id->sibling = semi;
+                TreeNode *cont = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(cont->name,"continue");
+                cont->sibling = id;
+                TreeNode *retstmt = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(retstmt->name,"continue_statement");
+                retstmt->child = cont;
+                nodes[node_idx++] = retstmt;
 			}
 			;
 declaration_statement	: type_specifier IDENTIFIER SEMICOLON
 			{
 			    $$ = minic_create_declaration_statement($1,$2,NULL);
-                            TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
-			    strcpy(semi->name,";");
-                            TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
-                            strcpy(id->name,$2);
-                            id->sibling = semi;
+                TreeNode *semi = (TreeNode*)malloc(sizeof(TreeNode));
+    			strcpy(semi->name,";");
+                TreeNode *id = (TreeNode*)malloc(sizeof(TreeNode));
+                strcpy(id->name,$2);
+                id->sibling = semi;
 			    TreeNode *tsnode = nodes[--node_idx];
 		 	    tsnode->sibling = id;
                             TreeNode *decstmt = (TreeNode*)malloc(sizeof(TreeNode));
@@ -1748,16 +1717,14 @@ class_definition	: CLASS_T IDENTIFIER LC member_declaration_list RC
 			    TreeNode *mdl = nodes[--node_idx];
 			    TreeNode *lc = malloc(sizeof(TreeNode));
 			    strcpy(lc->name,"{");
-			    //TreeNode *extend = nodes[--node_idx];
 			    TreeNode *id = malloc(sizeof(TreeNode));
 			    strcpy(id->name,$2);
 			    TreeNode *class = malloc(sizeof(TreeNode));
-			    strcpy(class->name,"struct");
+			    strcpy(class->name,"structure");
 			    TreeNode *cd = malloc(sizeof(TreeNode));
 			    strcpy(cd->name,"class_definition");
 			    mdl->sibling = rc;
 			    lc->sibling = mdl;
-			    //extend->sibling = lc;
 			    id->sibling = lc;
 			    class->sibling = id;
 			    cd->child = class;

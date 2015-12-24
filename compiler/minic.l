@@ -492,21 +492,38 @@ output(char *buf)
 	Expression *expression = minic_alloc_expression(STRING_EXPRESSION);
 	expression->u.string_value = minic_close_string_literal();
 	yylval.expression = expression;
-	output(expression->u.string_value);
+	char buf[] = "\"  END_LITERAL_STATE\t";
+	output(buf);
 	BEGIN INITIAL;
 	return STRING_LITERAL;
 }
 <STRING_LITERAL_STATE>\n	{
 	minic_add_string_literal('\n');
+	output("\\n STR_NEW_LINE\t");
 	increment_line_number();
 }
-<STRING_LITERAL_STATE>\\\"	minic_add_string_literal('"');
-<STRING_LITERAL_STATE>\\n	minic_add_string_literal('\n');
-<STRING_LITERAL_STATE>\\t	minic_add_string_literal('\t');
-<STRING_LITERAL_STATE>\\\\	minic_add_string_literal('\\');
+<STRING_LITERAL_STATE>\\\"	{
+	minic_add_string_literal('"');
+	output("\\\" STR_SLASH\t");
+}
+<STRING_LITERAL_STATE>\\n	{
+	minic_add_string_literal('\n');
+	output("\\n STRING\t");
+}
+<STRING_LITERAL_STATE>\\t	{
+	minic_add_string_literal('\t');
+	output("\\t STRING\t");
+}
+<STRING_LITERAL_STATE>\\\\	{
+	minic_add_string_literal('\\');
+	output("\\\\ STRING\t");
+}
 <STRING_LITERAL_STATE>.	{
 	Encoding enc = minic_get_current_compiler()->source_encoding;
 	minic_add_string_literal(yytext[0]);
+	char buf[64];
+	sprintf(buf,"%c STRING\t",yytext[0]);
+	output(buf);
 	if(enc == SHIFT_JIS_ENCODING && ((((unsigned char*)yytext)[0] >= 0x81
              && ((unsigned char*)yytext)[0] <= 0x9e)
             || (((unsigned char*)yytext)[0] >= 0xe0

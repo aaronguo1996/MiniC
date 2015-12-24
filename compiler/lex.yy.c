@@ -1646,7 +1646,8 @@ YY_RULE_SETUP
 	Expression *expression = minic_alloc_expression(STRING_EXPRESSION);
 	expression->u.string_value = minic_close_string_literal();
 	yylval.expression = expression;
-	output(expression->u.string_value);
+	char buf[] = "\"  END_LITERAL_STATE\t";
+	output(buf);
 	BEGIN INITIAL;
 	return STRING_LITERAL;
 }
@@ -1654,38 +1655,54 @@ YY_RULE_SETUP
 case 74:
 /* rule 74 can match eol */
 YY_RULE_SETUP
-#line 499 "minic.l"
+#line 500 "minic.l"
 {
 	minic_add_string_literal('\n');
+	output("\\n STR_NEW_LINE\t");
 	increment_line_number();
 }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 503 "minic.l"
-minic_add_string_literal('"');
+#line 505 "minic.l"
+{
+	minic_add_string_literal('"');
+	output("\\\" STR_SLASH\t");
+}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 504 "minic.l"
-minic_add_string_literal('\n');
+#line 509 "minic.l"
+{
+	minic_add_string_literal('\n');
+	output("\\n STRING\t");
+}
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 505 "minic.l"
-minic_add_string_literal('\t');
+#line 513 "minic.l"
+{
+	minic_add_string_literal('\t');
+	output("\\t STRING\t");
+}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 506 "minic.l"
-minic_add_string_literal('\\');
+#line 517 "minic.l"
+{
+	minic_add_string_literal('\\');
+	output("\\\\ STRING\t");
+}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 507 "minic.l"
+#line 521 "minic.l"
 {
 	Encoding enc = minic_get_current_compiler()->source_encoding;
 	minic_add_string_literal(yytext[0]);
+	char buf[64];
+	sprintf(buf,"%c STRING\t",yytext[0]);
+	output(buf);
 	if(enc == SHIFT_JIS_ENCODING && ((((unsigned char*)yytext)[0] >= 0x81
              && ((unsigned char*)yytext)[0] <= 0x9e)
             || (((unsigned char*)yytext)[0] >= 0xe0
@@ -1696,7 +1713,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 517 "minic.l"
+#line 534 "minic.l"
 {
     minic_add_string_literal(yytext[0]);
     BEGIN STRING_LITERAL_STATE;
@@ -1704,10 +1721,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 521 "minic.l"
+#line 538 "minic.l"
 ECHO;
 	YY_BREAK
-#line 1711 "lex.yy.c"
+#line 1728 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(C_COMMENT):
 case YY_STATE_EOF(CC_COMMENT):
@@ -2710,7 +2727,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 521 "minic.l"
+#line 538 "minic.l"
 
 
 

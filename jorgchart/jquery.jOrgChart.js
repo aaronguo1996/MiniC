@@ -132,6 +132,7 @@
                                      .data("tree-node", nodeCount)
                                      .append($nodeContent);
 
+
     // Expand and contract nodes
     if ($childNodes.length > 0) {
       $nodeDiv.click(function() {
@@ -139,7 +140,7 @@
           var $tr = $this.closest("tr");
 
           if($tr.hasClass('contracted')){
-            $this.css('cursor','n-resize');
+            $this.css('cursor','pointer');
             $tr.removeClass('contracted').addClass('expanded');
             $tr.nextAll("tr").css('visibility', '');
 
@@ -147,7 +148,7 @@
             // maintain their appearance
             $node.removeClass('collapsed');
           }else{
-            $this.css('cursor','s-resize');
+            $this.css('cursor','pointer');
             $tr.removeClass('expanded').addClass('contracted');
             $tr.nextAll("tr").css('visibility', 'hidden');
 
@@ -162,7 +163,7 @@
 
     if($childNodes.length > 0) {
       // if it can be expanded then change the cursor
-      $nodeDiv.css('cursor','n-resize');
+      $nodeDiv.css('cursor','pointer');
     
       // recurse until leaves found (-1) or to the level specified
       if(opts.depth == -1 || (level+1 < opts.depth)) { 
@@ -222,8 +223,11 @@
     }
 
     $table.append($tbody);
-    $appendTo.append($table);
-    
+    if($childNodes.length==0){
+        $appendTo.append($nodeDiv);
+    }else {
+        $appendTo.append($table);
+    }
     /* Prevent trees collapsing if a link inside a node is clicked */
     $nodeDiv.children('a').click(function(e){
         console.log(e);
