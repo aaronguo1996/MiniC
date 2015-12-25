@@ -19,7 +19,6 @@ reserve_function_index(MINIC_Compiler *compiler, FunctionDefinition *src)
     dst = &compiler->mvm_function[compiler->mvm_function_count];
     compiler->mvm_function_count++;
     dst->name = src->name;
-    //printf("%s,%d\n",src->name,compiler->mvm_function_count);
     return compiler->mvm_function_count-1;
 }
 
@@ -78,9 +77,11 @@ fix_type_specifier(TypeSpecifier *type)
 	        type->class_ref.class_index = add_class(cd);
 	        return;
 	    }
-	    printf("FROM FIX_TYPE_SPECIFIER\nLine[%d]: %s %s\n",
+        FILE *fp = fopen("error.info","at");
+	    fprintf(fp,"FROM FIX_TYPE_SPECIFIER\nLine[%d]: %s %s\n",
 		    type->line_number,
 		    "cannot find type name",type->class_ref.identifier);
+        exit(-1);
     }
 }
 
@@ -101,11 +102,13 @@ fix_identifier_expression(Block *current_block, Expression *expr,
     }
     fd = minic_search_function(expr->u.identifier.name);
     if (fd == NULL) {
-    	printf("FROM FIX_IDENFITIER_EXPRESSION\nLine [%d]: %s %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_IDENFITIER_EXPRESSION\nLine [%d]: %s %s\n",
     		expr->line_number,
     		"cannot find identifier",
     		expr->u.identifier.name);
-    	exit(-1);
+    	//exit(-1);
     }
     expr->type = fd->type;
     expr->u.identifier.kind = FUNCTION_IDENTIFIER;
@@ -139,10 +142,12 @@ fix_assign_expression(Block *current_block, Expression *expr)
     if (expr->u.assign_expression.left->kind != IDENTIFIER_EXPRESSION
         && expr->u.assign_expression.left->kind != INDEX_EXPRESSION
 	&& expr->u.assign_expression.left->kind != MEMBER_EXPRESSION) {
-	printf("FROM FIX_ASSIGN_EXPRESSION\nLine[%d]: %s\n",
-		expr->u.assign_expression.left->line_number,
-		"assign to a non-left-operand");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_ASSIGN_EXPRESSION\nLine[%d]: %s\n",
+    		expr->u.assign_expression.left->line_number,
+    		"assign to a non-left-operand");
+    	//exit(-1);
     }
     expr->u.assign_expression.left
 	= fix_expression(current_block, expr->u.assign_expression.left,expr);
@@ -150,10 +155,12 @@ fix_assign_expression(Block *current_block, Expression *expr)
     if(operand->type->basic_type != 
        expr->u.assign_expression.left->type->basic_type)
     {
-        printf("FROM FIX_ASSIGN_EXPRESSION\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM FIX_ASSIGN_EXPRESSION\nLine[%d]: %s\n",
 		expr->u.assign_expression.left->line_number,
 		"wrong basic type in assignment");
-	exit(-1);
+	//exit(-1);
     }
 
     expr->type = expr->u.assign_expression.left->type;
@@ -172,19 +179,23 @@ eval_math_expression_int(Expression *expr, int left, int right)
 	expr->u.integer_value = left * right;
     }else if(expr->kind == DIV_EXPRESSION){
 	if(right == 0){
-	    printf("FROM EVAL_MATH_EXPRESSION\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+	    fprintf(fp,"FROM EVAL_MATH_EXPRESSION\nLine[%d]: %s\n",
 		    expr->line_number,
 		    "divided by zero error.");
-	    exit(-1);
+	    //exit(-1);
 	}
 	expr->u.integer_value = left / right;
     }else if(expr->kind == MOD_EXPRESSION){
 	expr->u.integer_value = left % right;
     }else{
-	printf("FROM EVAL_MATH_EXPRESSION_INT\nLine[%d]: %s\n",
-		expr->line_number,
-		"unknown expression kind");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM EVAL_MATH_EXPRESSION_INT\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"unknown expression kind");
+    	//exit(-1);
     }
     expr->kind = INTEGER_EXPRESSION;
     expr->type = minic_alloc_type_specifier(MVM_INTEGER_TYPE);
@@ -204,15 +215,19 @@ eval_math_expression_decimal(Expression *expr, float left, float right)
     }else if(expr->kind == DIV_EXPRESSION){
 	expr->u.decimal_value = left / right;
     }else if(expr->kind == MOD_EXPRESSION){
-	printf("FROM EVAL_MATH_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
-		expr->line_number,
-		"MOD cannot be calculated on decimal numbers.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM EVAL_MATH_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"MOD cannot be calculated on decimal numbers.");
+    	//exit(-1);
     }else{
-	printf("FROM EVAL_MATH_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
-		expr->line_number,
-		"unknown exression kind.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM EVAL_MATH_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"unknown exression kind.");
+    	//exit(-1);
     }
     expr->kind = DECIMAL_EXPRESSION;
     expr->type = minic_alloc_type_specifier(MVM_DECIMAL_TYPE);
@@ -300,10 +315,12 @@ fix_math_binary_expression(Block *current_block, Expression *expr)
                        == NULL_EXPRESSION))) {
         expr->type =  minic_alloc_type_specifier(MVM_STRING_TYPE);
     } else{
-	printf("FROM FIX_MATH_BINARY_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"math type mismatch.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_MATH_BINARY_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"math type mismatch.");
+    	exit(-1);
     }
 
     return expr;
@@ -318,10 +335,12 @@ eval_compare_expression_boolean(Expression *expr,
     }else if(expr->kind == NE_EXPRESSION){
 	expr->u.boolean_value = (left != right);
     }else{
-	printf("FROM EVAL_COMPARE_EXPRESSION_BOOLEAN\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+	   fprintf(fp,"FROM EVAL_COMPARE_EXPRESSION_BOOLEAN\nLine[%d]: %s\n",
 		expr->line_number,
 		"unknown expression kind.");
-	exit(-1);
+	//exit(-1);
     }
 
     expr->kind = BOOLEAN_EXPRESSION;
@@ -346,10 +365,12 @@ eval_compare_expression_int(Expression *expr, int left, int right)
     }else if(expr->kind == LE_EXPRESSION){
 	expr->u.boolean_value = (left <= right);
     }else{
-	printf("FROM EVAL_COMPARE_EXPRESSION_INT\nLine[%d]: %s\n",
-		expr->line_number,
-		"unknown compare expression.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM EVAL_COMPARE_EXPRESSION_INT\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"unknown compare expression.");
+    	//exit(-1);
     }
 
     expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
@@ -374,10 +395,12 @@ eval_compare_expression_decimal(Expression *expr, float left, float right)
     }else if(expr->kind == LE_EXPRESSION){
         expr->u.boolean_value = (left <= right);
     }else{
-        printf("FROM EVAL_COMPARE_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM EVAL_COMPARE_EXPRESSION_DECIMAL\nLine[%d]: %s\n",
                 expr->line_number,
                 "unknown compare expression.");
-	exit(-1);
+	//exit(-1);
     }
 
     expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
@@ -405,10 +428,12 @@ eval_compare_expression_string(Expression *expr, char *left, char *right)
     }else if(expr->kind == LE_EXPRESSION){
         expr->u.boolean_value = (cmp <= 0);
     }else{
-        printf("FROM EVAL_COMPARE_EXPRESSION_STRING\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM EVAL_COMPARE_EXPRESSION_STRING\nLine[%d]: %s\n",
                 expr->line_number,
                 "unknown compare expression.");
-	exit(-1);
+	//exit(-1);
     }
 
     expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
@@ -475,7 +500,7 @@ eval_compare_expression(Expression *expr)
 
     return expr;
 }
-
+ 
 static Expression *
 fix_compare_expression(Block *current_block, Expression *expr)
 {
@@ -490,10 +515,12 @@ fix_compare_expression(Block *current_block, Expression *expr)
 
     if (expr->u.binary_expression.left->type->basic_type !=
         expr->u.binary_expression.right->type->basic_type) {
-        printf("FROM FIX_COMPARE_EXPRESSION\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM FIX_COMPARE_EXPRESSION\nLine[%d]: %s\n",
 		expr->line_number,
 		"wrong compare expression.");
-	exit(-1);
+	//exit(-1);
     }
     expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
 
@@ -512,10 +539,12 @@ fix_logical_and_or_expression(Block *current_block, Expression *expr)
 	&& minic_is_boolean(expr->u.binary_expression.right->type)){
 	expr->type = minic_alloc_type_specifier(MVM_BOOLEAN_TYPE);
     }else{
-	printf("FROM FIX_LOGICAL_AND_OR_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"logical type mismatch error.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_LOGICAL_AND_OR_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"logical type mismatch error.");
+    	//exit(-1);
     }
 
     return expr;
@@ -529,10 +558,12 @@ fix_minus_expression(Block *current_block, Expression *expr)
 
     if(!minic_is_integer(expr->u.minus_expression->type)
 	&& !minic_is_decimal(expr->u.minus_expression->type)){
-	printf("FROM FIX_MINUS_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"minus type mismatch error.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM FIX_MINUS_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"minus type mismatch error.");
+    	//exit(-1);
     }
     expr->type = expr->u.minus_expression->type;
 
@@ -562,10 +593,12 @@ fix_logical_not_expression(Block *current_block, Expression *expr)
     }
 
     if (!minic_is_boolean(expr->u.logical_not->type)) {
-	printf("FROM FIX_LOGICAL_NOT_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-                "logical not type mismatch error.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_LOGICAL_NOT_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+                    "logical not type mismatch error.");
+    	//exit(-1);
     }
     expr->type = expr->u.logical_not->type;
 
@@ -585,18 +618,22 @@ check_argument(Block *current_block, FunctionDefinition *fd, Expression *expr)
         arg->expression
             = fix_expression(current_block, arg->expression, expr);
         if(param->type->basic_type != arg->expression->type->basic_type){
-	    printf("FROM CHECK_ARGUMENT\nLine[%d]: %s\n",
-		    expr->line_number,
-		    "type of parameters and arguments mismatch error.");
-	    exit(-1);
+            error_detected = 1;
+            FILE *fp = fopen("error.info","at");
+    	    fprintf(fp,"FROM CHECK_ARGUMENT\nLine[%d]: %s\n",
+    		    expr->line_number,
+    		    "type of parameters and arguments mismatch error.");
+    	    //exit(-1);
 	}
     }
 
-    if (param || arg) {
-	printf("FROM CHECK_ARGUMENT\nLine[%d]: %s\n",
+    if (param || arg){ 
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");	
+        fprintf(fp,"FROM CHECK_ARGUMENT\nLine[%d]: %s\n",
 		expr->line_number,
 		"count of parameters and arguments mismatch error.");
-	exit(-1);
+	//exit(-1);
     }
 }
 /*
@@ -627,19 +664,23 @@ fix_function_call_expression(Block *current_block, Expression *expr)
                                expr);
 
     if (func_expr->kind != IDENTIFIER_EXPRESSION) {
-	printf("FROM FIX_FUNCTION_CALL\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+	   printf(fp,"FROM FIX_FUNCTION_CALL\nLine[%d]: %s\n",
 		expr->line_number,
 		"function not identifier error.");
-	exit(-1);
+	//exit(-1);
     }
 
     fd = minic_search_function(func_expr->u.identifier.name);
     if (fd == NULL) {
- 	printf("FROM FIX_FUNCTION_CALL\nLine[%d]: %s %s\n",
-		expr->line_number,
-		"function not found error.",
-		func_expr->u.identifier.name);
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+     	fprintf(fp,"FROM FIX_FUNCTION_CALL\nLine[%d]: %s %s\n",
+    		expr->line_number,
+    		"function not found error.",
+    		func_expr->u.identifier.name);
+    	//exit(-1);
      }
     check_argument(current_block, fd, expr);
 
@@ -657,7 +698,9 @@ fix_array_literal_expression(Block *current_block, Expression *expr)
     ExpressionList *epos;
 
     if(literal == NULL){
-	printf("FROM_FIX_ARRAY_LITERAL_EXPRESSION\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+	   printf(fp,"FROM_FIX_ARRAY_LITERAL_EXPRESSION\nLine[%d]: %s\n",
 		expr->line_number,
 		"array expression cannot be null.");
     }
@@ -700,16 +743,20 @@ fix_index_expression(Block *current_block, Expression *expr)
 
     if(ie->array->type->derive == NULL
 	|| ie->array->type->derive->tag != ARRAY_DERIVE){
-	printf("FROM FIX_INDEX_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"index left operand is not array.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_INDEX_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"index left operand is not array.");
+    	//exit(-1);
     }
     if(!minic_is_integer(ie->index->type)){
-	printf("FROM FIX_INDEX_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"index is not integer.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_INDEX_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"index is not integer.");
+    	//exit(-1);
     }
     expr->type = minic_alloc_type_specifier(ie->array->type->basic_type);
     expr->type->derive = ie->array->type->derive->next;
@@ -724,10 +771,12 @@ fix_inc_dec_expression(Block *current_block, Expression *expr)
         = fix_expression(current_block, expr->u.inc_dec.operand, expr);
 
     if (!minic_is_integer(expr->u.inc_dec.operand->type)) {
-	printf("FROM FIX_INC_DEC_EXPRESSION\nLine[%d]: %s\n",
-		expr->line_number,
-		"increment or decrement type mismatch error.");
-	exit(-1);
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_INC_DEC_EXPRESSION\nLine[%d]: %s\n",
+    		expr->line_number,
+    		"increment or decrement type mismatch error.");
+    	//exit(-1);
     }
     expr->type = expr->u.inc_dec.operand->type;
 
@@ -747,10 +796,12 @@ fix_array_creation_expression(Block *current_block, Expression *expr)
 						 dim_pos->expression,
 						 expr);
 	    if(!minic_is_integer(dim_pos->expression->type)){
-		printf("FROM FIX_ARRAY_CREATION_EXPRESSION\nLine [%d]: %s\n",
-			expr->line_number,
-			"array size is not interger.");
-		exit(-1);
+            error_detected = 1;
+            FILE *fp = fopen("error.info","at");
+    		fprintf(fp,"FROM FIX_ARRAY_CREATION_EXPRESSION\nLine [%d]: %s\n",
+    			expr->line_number,
+    			"array size is not interger.");
+    		//(-1);
 	    }
 	}
 	tmp_derive = minic_alloc_type_derive(ARRAY_DERIVE);
@@ -773,7 +824,9 @@ fix_class_member_expression(Expression *expr,
     member = minic_search_member(obj->type->class_ref.class_definition,
                                member_name);
     if (member == NULL) {
-        printf("FROM FIX_CLASS_MEMBER_EXPRESSION\nLine[%d]: cannot find member %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+        fprintf(fp,"FROM FIX_CLASS_MEMBER_EXPRESSION\nLine[%d]: cannot find member %s\n",
             expr->line_number,member_name);
     }
     
@@ -962,10 +1015,12 @@ fix_return_statement(Block *current_block, ReturnStatement *return_s,
         return;
     }
     if(return_s->return_value->type->basic_type != fd->type->basic_type){
-    	printf("FROM FIX_RETURN_STATEMENT\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM FIX_RETURN_STATEMENT\nLine[%d]: %s\n",
     		return_s->return_value->line_number,
     		"wrong return value type.");
-    	exit(-1);
+    	//exit(-1);
     }
 }
 
@@ -974,11 +1029,13 @@ add_declaration(Block *current_block, Declaration *decl,
                 FunctionDefinition *fd, int line_number)
 {
     if (minic_search_declaration(decl->name, current_block) || minic_search_class(decl->name)) {
-    	printf("FROM ADD_DECLARATION\nLine[%d]: %s %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+    	fprintf(fp,"FROM ADD_DECLARATION\nLine[%d]: %s %s\n",
     		line_number,
     		"variable multiple define error:",
     		decl->name);        
-    	exit(-1);
+    	//exit(-1);
     }
 
     if (current_block) {
@@ -1000,7 +1057,9 @@ create_assign_cast(Expression *src, TypeSpecifier *dst)
     if (src->type->basic_type == dst->basic_type) 
 		return src;
     else{
-	    printf("FROM CREATE_ASSIGN_CAST\nLine[%d]: %s\n",
+        error_detected = 1;
+        FILE *fp = fopen("error.info","at");
+	    fprintf(fp,"FROM CREATE_ASSIGN_CAST\nLine[%d]: %s\n",
 		src->line_number,
 		"wrong expression type.");
     }
@@ -1094,10 +1153,12 @@ add_parameter_as_declaration(FunctionDefinition *fd)
 
     for (param = fd->parameter; param; param = param->next) {
         if (minic_search_declaration(param->name, fd->block)) {
-            printf("FROM ADD_PARAMETER_AS_DECLARATION\nLine[%d]: %s",
+            error_detected = 1;
+            FILE *fp = fopen("error.info","at");
+            fprintf(fp,"FROM ADD_PARAMETER_AS_DECLARATION\nLine[%d]: %s",
 		   param->line_number,
 		   "parameter multiple define error");
-	    exit(-1);
+	    //exit(-1);
 	}
 	decl = minic_alloc_declaration(param->type, param->name);
 	add_declaration(fd->block, decl, fd, param->line_number);

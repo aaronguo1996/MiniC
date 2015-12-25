@@ -17,6 +17,7 @@
 #define CODE_SIZE (0xFFFFFF-1)
 
 char source_code[CODE_SIZE];
+int error_detected;
 
 typedef enum {
     MINIC_FILE_INPUT_MODE = 1,

@@ -19,10 +19,12 @@ div.jOrgChart {margin-top:8em;}
 
 .jOrgChart .top {
   border-top          : 3px solid #69c7c7;
+  /*margin:0 3px;*/
 }
 
 .jOrgChart .left {
   border-right          : 3px solid #69c7c7;
+ margin-right:10px;
 }
 
 .jOrgChart .right {
@@ -48,7 +50,7 @@ div.jOrgChart {margin-top:8em;}
   min-width:50px;
   min-height:50px;
   z-index: 10;
-  margin:0 2px;
+  margin:0 3px;
 }
 
 .jOrgChart a {

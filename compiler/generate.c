@@ -112,7 +112,6 @@ copy_type_specifier_no_alloc(TypeSpecifier *src, MVM_TypeSpecifier *dest)
     dest->basic_type = src->basic_type;
     if (src->basic_type == MVM_CLASS_TYPE) {
         dest->class_index = src->class_ref.class_index;
-        printf("class\n");
     } else {
         dest->class_index = -1;
     }
@@ -178,7 +177,6 @@ add_global_variable(MINIC_Compiler *compiler, MVM_Executable *exe)
 
     for (dl = compiler->declaration_list, i = 0; dl; dl = dl->next, i++) {
         exe->global_variable[i].name = MEM_strdup(dl->declaration->name);
-        printf("variable %s\n",exe->global_variable[i].name);
         exe->global_variable[i].type
             = copy_type_specifier(dl->declaration->type);
     }
@@ -567,15 +565,12 @@ static void
 generate_identifier_expression(MVM_Executable *exe, Block *block,
                                Expression *expr, OpcodeBuf *ob)
 {
-    printf("%d %s\n",expr->u.identifier.kind,expr->u.identifier.name);
     switch (expr->u.identifier.kind) {
     case VARIABLE_IDENTIFIER:
         generate_identifier(expr->u.identifier.u.declaration, ob,
             expr->line_number);
         break;
     case FUNCTION_IDENTIFIER:
-	    //printf("function name:%s\n", expr->u.identifier.name);
-	    //printf("function index: %d\n", expr->u.identifier.u.function->index);
         generate_code(ob, expr->line_number,
             MVM_PUSH_FUNCTION, expr->u.identifier.u.function->index);
         break;
@@ -865,7 +860,6 @@ static void
 generate_expression(MVM_Executable *exe, Block *current_block,
                     Expression *expr, OpcodeBuf *ob)
 {
-    printf("expression kind %d\n",expr->kind);
     switch (expr->kind) {
     case BOOLEAN_EXPRESSION:
         generate_boolean_expression(exe, expr, ob);
@@ -991,7 +985,6 @@ generate_assign_expression(MVM_Executable *exe, Block *block,
                            Expression *expr, OpcodeBuf *ob,
                            MVM_Boolean is_toplevel)
 {
-    printf("assign kind %d\n",expr->u.assign_expression.operator);
     if (expr->u.assign_expression.operator != NORMAL_ASSIGN) {
         generate_expression(exe, block, expr->u.assign_expression.left, ob);
     }
@@ -1049,9 +1042,7 @@ generate_expression_statement(MVM_Executable *exe, Block *block,
                               Expression *expr, OpcodeBuf *ob)
 {
     if (expr->kind == ASSIGN_EXPRESSION) {
-        printf("assign\n");
         generate_assign_expression(exe, block, expr, ob, MVM_TRUE);
-        printf("assign end\n");
     } else if (expr->kind == INCREMENT_EXPRESSION
                || expr->kind == DECREMENT_EXPRESSION) {
         generate_inc_dec_expression(exe, block, expr, expr->kind, ob, MVM_TRUE);
@@ -1177,7 +1168,6 @@ generate_statement_list(MVM_Executable *exe, Block *current_block,
     StatementList *pos;
 
     for (pos = statement_list; pos; pos = pos->next) {
-        printf("%d\n",pos->statement->type);
         switch (pos->statement->type) {
         case EXPRESSION_STATEMENT:
             generate_expression_statement(exe, current_block,
@@ -1275,10 +1265,8 @@ add_top_level(MINIC_Compiler *compiler, MVM_Executable *exe)
     OpcodeBuf           ob;
 
     init_opcode_buf(&ob);
-	printf("1\n");
     generate_statement_list(exe, NULL, compiler->statement_list,
                             &ob);
-    printf("2\n");
     exe->code_size = ob.size;
     exe->code = fix_opcode_buf(&ob);
     exe->line_number_size = ob.line_number_size;

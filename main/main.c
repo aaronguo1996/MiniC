@@ -46,6 +46,7 @@ int main(int argc, char **argv)
     FILE *fp;
     FILE *fp_disassemble;
     FILE *fp_lex;
+    error_detected = 0;
 
     if (argc < 2) {
 	    fprintf(stderr,"usage:%s filename arg1, arg2, ...\n",argv[0]);
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
     
     fp = fopen(argv[1],"r");
     if (fp == NULL) {
-	    fprintf(stderr, "%s not found.\n",argv[1]);
+	    fprintf(stderr, "file %s not found.\n",argv[1]);
 	    exit(1);
     }
 
@@ -68,12 +69,14 @@ int main(int argc, char **argv)
     update_index(tree);
     fix_file();
 
-    mvm_disassemble(exe);
-	mvm = MVM_create_virtual_machine();
-	MVM_add_executable(mvm, exe);
-	MVM_execute(mvm);
-    fp_disassemble = fopen("disassemble","w+");
-	mvm_disassemble_to_file(exe,fp_disassemble);
+    //mvm_disassemble(exe);
+    if(!error_detected){
+    	mvm = MVM_create_virtual_machine();
+    	MVM_add_executable(mvm, exe);
+    	MVM_execute(mvm);
+        fp_disassemble = fopen("disassemble","w+");
+    	mvm_disassemble_to_file(exe,fp_disassemble);
+    }
 	
     return 0;
 }

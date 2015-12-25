@@ -43,7 +43,7 @@ do_compile(MINIC_Compiler *compiler, FILE *fp)
     yyin = fp;
 	minic_set_current_compiler(compiler);
 	if (yyparse()) {
-		fprintf(stderr,"Error!\n");
+		fprintf(stderr,"Parse Error!\n");
 		exit(1);
 	}
 }
@@ -52,19 +52,6 @@ MVM_Executable *MINIC_compile(MINIC_Compiler *compiler, FILE *fp)
 {
 	do_compile(compiler, fp);
 	minic_fix_tree(compiler);
-	printf("haha\n");
 	MVM_Executable *exe = minic_generate(compiler);
 	return exe;
 }
-
-/*
-void
-MINIC_dispose_compiler(MINIC_Compiler *compiler)
-{
-	FunctionDefinition *fd_pos;
-	for(fd_pos = compiler->function_list; fd_pos;fd_pos = fd_pos->next){
-		MEM_free(fd_pos->local_variable);
-	}
-	MEM_dispose_storage(compiler->compile_storage);
-}*/
-

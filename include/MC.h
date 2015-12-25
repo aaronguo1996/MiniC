@@ -7,6 +7,7 @@
 
 typedef struct MINIC_Compiler_tag MINIC_Compiler;
 extern char source_code[CODE_SIZE];
+extern int error_detected;
 
 MINIC_Compiler *MINIC_create_compiler(void);
 MVM_Executable *MINIC_compile(MINIC_Compiler *compiler, FILE *fp);
