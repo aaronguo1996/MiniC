@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <wchar.h>
 #include <string.h>
-#include "MVM_code.h"
-#include "share.h"
+#include "../include/MVM_code.h"
+#include "../include/share.h"
 
 #define smaller(a,b) ((a) < (b) ? (a) : (b))
 #define larger(a,b)  ((a) > (b) ? (a) : (b))

@@ -1,4 +1,4 @@
-#include "MC.h"
+#include "../include/MC.h"
 #include "minic.h"
 #include "y.tab.h"
 #include <string.h>
@@ -15,7 +15,13 @@ MINIC_create_compiler(void)
 	compiler->declaration_list = NULL;
 	compiler->statement_list = NULL;
 	compiler->current_block = NULL;
+	compiler->class_definition_list = NULL;
 	compiler->current_line_number = 1;
+	compiler->mvm_function = NULL;
+	compiler->mvm_class_count = 0;
+	compiler->mvm_class = NULL;
+	compiler->declaration_list = NULL;
+	compiler->statement_list = NULL;
 	compiler->input_mode = MINIC_FILE_INPUT_MODE;
 #ifdef EUC_SOURCE
 	compiler->source_encoding = EUC_ENCODING;
@@ -43,7 +49,7 @@ do_compile(MINIC_Compiler *compiler, FILE *fp)
     yyin = fp;
 	minic_set_current_compiler(compiler);
 	if (yyparse()) {
-		fprintf(stderr,"Parse Error!\n");
+		fprintf(stderr,"Error!\n");
 		exit(1);
 	}
 }
@@ -55,3 +61,15 @@ MVM_Executable *MINIC_compile(MINIC_Compiler *compiler, FILE *fp)
 	MVM_Executable *exe = minic_generate(compiler);
 	return exe;
 }
+
+/*
+void
+MINIC_dispose_compiler(MINIC_Compiler *compiler)
+{
+	FunctionDefinition *fd_pos;
+	for(fd_pos = compiler->function_list; fd_pos;fd_pos = fd_pos->next){
+		MEM_free(fd_pos->local_variable);
+	}
+	MEM_dispose_storage(compiler->compile_storage);
+}*/
+

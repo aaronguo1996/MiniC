@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "share.h"
+#include "../include/share.h"
 
 extern OpcodeInfo mvm_opcode_info[];
 

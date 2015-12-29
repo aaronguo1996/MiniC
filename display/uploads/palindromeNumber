@@ -1,0 +1,48 @@
+
+void printInteger(integer i);
+void print(string str);
+
+integer reverseInteger(integer a)
+{
+    if (a = 0) {
+        return a;
+    }
+    boolean flag := false;
+    if (a < 0) {
+        flag := true;
+        a := -a;
+    }
+    integer b := 0;
+    while (a > 0)
+    {
+        b := b * 10;
+        b := b + a % 10;
+        a := a / 10;
+    }
+    if (flag) {
+        b := -b;
+    }
+    return b;
+}
+
+boolean isPalindrome(integer m)
+{
+    printInteger(m);
+    print(" is ");
+    integer n := reverseInteger(m);
+    if (m = n)
+    {
+        print("palindrome\n");
+        return true;
+    }
+    else
+    {
+        print(" not palindrome\n");
+        return false;
+    }
+}
+
+isPalindrome(3452);
+isPalindrome(121);
+isPalindrome(3456543);
+isPalindrome(143);

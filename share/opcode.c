@@ -1,4 +1,4 @@
-#include "share.h"
+#include "../include/share.h"
 
 OpcodeInfo mvm_opcode_info[] = {
     {"dummy", "", 0},

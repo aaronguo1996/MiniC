@@ -27,7 +27,7 @@ typedef union {
 
 MVM_VirtualMachine *MVM_create_virtual_machine(void);
 void MVM_add_executable(MVM_VirtualMachine *mvm, MVM_Executable *exe);
-MVM_Value MVM_execute(MVM_VirtualMachine *mvm);
+void MVM_execute(MVM_VirtualMachine *mvm);//MVM_Value
 //void MVM_dispose_executable_list(MVM_ExecutableList *list);
 void MVM_dispose_virtual_machine(MVM_VirtualMachine *mvm);
 void mvm_disassemble(MVM_Executable *exe);

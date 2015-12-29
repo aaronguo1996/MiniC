@@ -1,6 +1,6 @@
 /* Basic styling */
 body{background:#f2f1eb;}
-p {font-family:"Adobe 黑体 Std R";font-weight:bolder; font-size:3em; color:#69c7c7;  float:left;}
+p {font-family:"微软雅黑 Light";font-weight:bolder; font-size:3em; color:#69c7c7;  float:left;}
 p.red {color:#a75781;margin-left:0.3em;}
 div.p {width:100%;top:0;left:0;position:fixed;background:#f2f1eb;}
 div.jOrgChart {margin-top:8em;}
@@ -19,12 +19,10 @@ div.jOrgChart {margin-top:8em;}
 
 .jOrgChart .top {
   border-top          : 3px solid #69c7c7;
-  /*margin:0 3px;*/
 }
 
 .jOrgChart .left {
   border-right          : 3px solid #69c7c7;
- margin-right:10px;
 }
 
 .jOrgChart .right {
@@ -50,13 +48,13 @@ div.jOrgChart {margin-top:8em;}
   min-width:50px;
   min-height:50px;
   z-index: 10;
-  margin:0 3px;
+  margin:0 2px;
 }
 
 .jOrgChart a {
   cursor: default;
   color: #ffffff;
-  font-family:"Comic Sans MS";
+  font-family:"Calibri";
 }
 
 /* jQuery drag 'n drop */

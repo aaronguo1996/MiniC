@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include "MEM.h"
+#include "../include/MEM.h"
 #include "minic.h"
 
 extern OpcodeInfo mvm_opcode_info[];

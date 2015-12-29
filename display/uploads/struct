@@ -1,0 +1,13 @@
+void printInteger(integer i);
+void print(string str);
+
+structure M
+{
+integer a;
+decimal b;
+}
+
+M m;
+m.a := 0;
+printInteger(m.a);
+print("\nhaha i am successful!!!\n");

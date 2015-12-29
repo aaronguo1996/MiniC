@@ -1,6 +1,5 @@
 void print(string str);
 void printInteger(integer i);
-void printDecimal(decimal i);
 
 structure b
 {
@@ -13,6 +12,9 @@ c.a := 0.0;
 
 integer quickSort(integer[] a, integer low, integer high)
 {
+    c.a++;
+    printInteger(c.a);
+    print("\n");
     if (low >= high)
     {
         return;

@@ -783,34 +783,16 @@ minic_create_declaration_statement(TypeSpecifier *type, char *identifier, Expres
 }
 
 void
-minic_start_class_definition(/*ClassOrMemberModifierList *modifier,*/
-                           char *identifier
-                           /*ExtendsList *extends*/)
+minic_start_class_definition(char *identifier)
 {
     ClassDefinition *cd;
     MINIC_Compiler *compiler = minic_get_current_compiler();
 
     cd = malloc(sizeof(ClassDefinition));
-
-    //cd->is_abstract = (class_or_interface == DVM_INTERFACE_DEFINITION);
-    /*cd->access_modifier = DVM_FILE_ACCESS;
-    if (modifier) {
-        if (modifier->is_abstract == ABSTRACT_MODIFIER) {
-            cd->is_abstract = DVM_TRUE;
-        }
-        cd->access_modifier = conv_access_modifier(modifier->access_modifier);
-    }*/
-    //cd->access_modifier = modifier->access_modifier;
-    //cd->class_or_interface = class_or_interface;
-    //cd->reference_name = compiler->reference_name;
     cd->name = identifier;
-    //cd->extends = extends;
     cd->member = NULL;
     cd->next = NULL;
     cd->line_number = compiler->current_line_number;
-
-//    DBG_assert(compiler->current_class_definition == NULL,
-  //             ("current_class_definition is not NULL."));
     compiler->current_class_definition = cd;
 }
 
@@ -835,56 +817,12 @@ void minic_class_define(MemberDeclaration *member_list)
     cd->member = member_list;
     compiler->current_class_definition = NULL;
 }
-/*
-ExtendsList *
-minic_create_extends_list(char *identifier)
-{
-    ExtendsList *list;
 
-    list = malloc(sizeof(ExtendsList));
-    list->identifier = identifier;
-    list->class_definition = NULL;
-    list->next = NULL;
-
-    return list;
-}
-
-ExtendsList *
-minic_chain_extends_list(ExtendsList *list, char *add)
-{
-    ExtendsList *pos;
-
-    for (pos = list; pos->next; pos = pos->next)
-        ;
-    pos->next = minic_create_extends_list(add);
-
-    return list;
-}
-
-ClassOrMemberModifierList
-minic_create_class_or_member_modifier(ModifierKind modifier)
-{
-    ClassOrMemberModifierList ret;
-
-    ret.access_modifier = NOT_SPECIFIED_MODIFIER;
-
-    switch (modifier) {
-    case PUBLIC_MODIFIER:
-        ret.access_modifier = PUBLIC_MODIFIER;
-        break;
-    case PRIVATE_MODIFIER:
-        ret.access_modifier = PRIVATE_MODIFIER;
-        break;
-    default:
-	break;
-    }
-    return ret;
-}*/
 
 MemberDeclaration *
 minic_chain_member_declaration(MemberDeclaration *list, MemberDeclaration *add)
 {
-    MemberDeclaration *pos;
+	MemberDeclaration *pos;// = malloc(sizeof(MemberDeclaration));
 
     for (pos = list; pos->next; pos = pos->next)
         ;
@@ -892,23 +830,18 @@ minic_chain_member_declaration(MemberDeclaration *list, MemberDeclaration *add)
 
     return list;
 }
-/*
+
 static MemberDeclaration *
-alloc_member_declaration(ClassOrMemberModifierList *modifier)
+alloc_member_declaration()
 {
     MemberDeclaration *ret;
 
     ret = malloc(sizeof(MemberDeclaration));
-    if (modifier) {
-        ret->access_modifier = modifier->access_modifier;
-    } else {
-        ret->access_modifier = NOT_SPECIFIED;
-    }
     ret->line_number = minic_get_current_compiler()->current_line_number;
     ret->next = NULL;
 
     return ret;
-}*/
+}
 
 MemberDeclaration *
 minic_create_field_member(/*ClassOrMemberModifierList *modifier,*/
@@ -916,7 +849,7 @@ minic_create_field_member(/*ClassOrMemberModifierList *modifier,*/
 {
     MemberDeclaration *ret;
 
-    ret = malloc(sizeof(MemberDeclaration));//alloc_member_declaration(modifier);
+    ret = alloc_member_declaration();
     ret->name = name;
     ret->type = type;
 

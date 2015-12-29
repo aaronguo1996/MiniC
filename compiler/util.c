@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "MEM.h"
+#include "../include/MEM.h"
 #include "minic.h"
 
 static MINIC_Compiler *st_current_compiler;

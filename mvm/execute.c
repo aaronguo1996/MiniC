@@ -1,6 +1,6 @@
 #include <math.h>
 #include <string.h>
-#include "MEM.h"
+#include "../include/MEM.h"
 #include "mvm_pri.h"
 
 extern OpcodeInfo mvm_opcode_info[];
@@ -426,7 +426,7 @@ MVM_Object *
 create_array_sub(MVM_VirtualMachine *mvm, int dim, int dim_index,
                  MVM_TypeSpecifier *type)
 {
-    MVM_Object *ret;
+    MVM_Object *ret = malloc(sizeof(MVM_Object));
     int size;
     int i;
 
@@ -545,14 +545,14 @@ char* str_alloc(char* src)
 	return ret;
 }
 
-static MVM_Value
+static void
 execute(MVM_VirtualMachine *mvm, Function *func,
         MVM_Byte *code, int code_size)
 {
     int         base;
     MVM_Executable *exe;
     int         pc;
-    MVM_Value   ret;
+    //MVM_Value   ret;
 
     pc = mvm->pc;
     exe = mvm->current_executable;
@@ -1185,10 +1185,11 @@ execute(MVM_VirtualMachine *mvm, Function *func,
         /* MEM_check_all_blocks(); */
     }
 
-    return ret;
+    //return ret;
 }
 
-MVM_Value
+//MVM_Value
+void
 MVM_execute(MVM_VirtualMachine *mvm)
 {
     MVM_Value ret;
@@ -1199,5 +1200,5 @@ MVM_execute(MVM_VirtualMachine *mvm)
     expand_stack(mvm, mvm->executable->need_stack_size);
     execute(mvm, NULL, mvm->executable->code, mvm->executable->code_size);
 
-    return ret;
+    //return ret;
 }

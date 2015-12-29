@@ -1,8 +1,8 @@
 #ifndef MVM_PRI_H_INCLUDED
 #define MVM_PRI_H_INCLUDED
-#include "MVM_code.h"
-#include "MVM_dev.h"
-#include "share.h"
+#include "../include/MVM_code.h"
+#include "../include/MVM_dev.h"
+#include "../include/share.h"
 
 #define STACK_ALLOC_SIZE (4096)
 #define HEAP_THRESHOLD_SIZE     (1024 * 256)

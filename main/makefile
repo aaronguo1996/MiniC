@@ -21,7 +21,7 @@ $(TARGET):$(OBJS)
 	$(CC) $(OBJS) -o $@ -lm
 
 clean:
-	rm lex back.php disassemble error.info -f *.o *~
+	rm lex back.php disassemble -f *.o *~
 .c.o:
 	$(CC) $(CFLAGS) $*.c $(INCLUDES)
 ../memory/mem.o:

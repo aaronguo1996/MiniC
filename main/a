@@ -1,73 +1,43 @@
-structure m
-
+struct m
 {
-
 integer c;
-
 integer a;
-
 }
-
 
 decimal f(integer i)
-
 {
-   
-decimal k := 1.2;
-   
-decimal n := 3.4;
-   
-return k/n;
-
+   decimal k := 1.2;
+   decimal n := 3.4;
+   return k/n;
 }
-
 
 integer test()
 {
-
-n rr;
-
+m rr;
 rr.a := 5;
-
 integer[] a;
-
 a := new integer[4];
-
 a := {1,2,3,4};
-
 integer b := 3;
-
 if(b>=10){
-  
-integer c := 0;
-
+  integer c := 0;
 }elseif(b > 0 && b < 10){
-  
-integer c := 9;
-
+  integer c := 9;
 }else{
-  
-integer d := 12;
-
+  integer d := 12;
 }
-
 integer i;
-
 for(i=0;i<9;i++)
 {
  b--;
 }
-
 while(b<0){
 b++;
 }
-//
 foreach( a : i)
 {
 f(i);
 //i;
 }
-
 return b;
-
 }

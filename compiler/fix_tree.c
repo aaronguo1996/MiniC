@@ -666,7 +666,7 @@ fix_function_call_expression(Block *current_block, Expression *expr)
     if (func_expr->kind != IDENTIFIER_EXPRESSION) {
         error_detected = 1;
         FILE *fp = fopen("error.info","at");
-	   printf(fp,"FROM FIX_FUNCTION_CALL\nLine[%d]: %s\n",
+	   fprintf(fp,"FROM FIX_FUNCTION_CALL\nLine[%d]: %s\n",
 		expr->line_number,
 		"function not identifier error.");
 	//exit(-1);
@@ -700,7 +700,7 @@ fix_array_literal_expression(Block *current_block, Expression *expr)
     if(literal == NULL){
         error_detected = 1;
         FILE *fp = fopen("error.info","at");
-	   printf(fp,"FROM_FIX_ARRAY_LITERAL_EXPRESSION\nLine[%d]: %s\n",
+	   fprintf(fp,"FROM_FIX_ARRAY_LITERAL_EXPRESSION\nLine[%d]: %s\n",
 		expr->line_number,
 		"array expression cannot be null.");
     }

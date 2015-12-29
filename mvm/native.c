@@ -1,4 +1,4 @@
-#include "MEM.h"
+#include "../include/MEM.h"
 #include "mvm_pri.h"
 
 static MVM_Value
